@@ -18,7 +18,7 @@ void* shm_setting(){
         fprintf(stderr, "E:ptr was already setted...\n");
         return ptr;
     }
-    fd=shm_open("SHM_NAME",O_RDWR|O_CREAT|O_TRUNC,"rw");
+    fd=shm_open("SHM_NAME",O_RDWR|O_CREAT|O_TRUNC,0666);
     if(fd<0){
         fprintf(stderr,"E:shm_setting failed\n");
         return NULL;
