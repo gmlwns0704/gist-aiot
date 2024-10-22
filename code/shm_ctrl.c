@@ -20,11 +20,15 @@ void* shm_setting(){
     }
     fd=shm_open("/SHM_NAME",O_RDWR|O_CREAT,0666);
     if(fd<0){
-        perror("shm_setting failed\n");
+        perror("shm_setting failed");
         return NULL;
     }
 
     ptr=mmap(0,SOUND_BUF_SZ,PROT_READ|PROT_WRITE,0666,fd,0);
+    if(ptr<0){
+        perror("mmap error");
+        return NULL;
+    }
     return ptr;
 }
 
