@@ -29,7 +29,7 @@ void* shm_setting(){
         return NULL;
     }
 
-    ptr=mmap(0,sizeof(struct s_shm_buf),PROT_READ|PROT_WRITE,0666,fd,0);
+    ptr=mmap(0,sizeof(struct s_shm_buf),PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
     if(ptr==MAP_FAILED){
         perror("mmap error");
         return NULL;
