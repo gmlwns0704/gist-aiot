@@ -24,6 +24,11 @@ void* shm_setting(){
         return NULL;
     }
 
+    if(ftruncate(fd, sizeof(struct s_shm_buf))<0){
+        perror("ftruncate error");
+        return NULL;
+    }
+
     ptr=mmap(0,sizeof(struct s_shm_buf),PROT_READ|PROT_WRITE,0666,fd,0);
     if(ptr<0){
         perror("mmap error");
