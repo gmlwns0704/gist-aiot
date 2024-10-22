@@ -30,7 +30,7 @@ void* shm_setting(){
     }
 
     ptr=mmap(0,sizeof(struct s_shm_buf),PROT_READ|PROT_WRITE,0666,fd,0);
-    if(ptr<0){
+    if(ptr==MAP_FAILED){
         perror("mmap error");
         return NULL;
     }
