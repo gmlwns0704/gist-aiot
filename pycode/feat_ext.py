@@ -14,25 +14,15 @@ from ctypes import c_char, c_longlong, Structure
 pre_progressing python code
 """
 padding = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a, np.zeros((a.shape[0], i-a.shape[1]))))
-    
-class Data(Structure):
-    _fields_ = [
-        ("buf", c_char * 16000),
-        ("sr", c_longlong)
-    ]
 
 def pre_progressing(sound):
     print(time.time())
     # 공유메모리에서 가져오기
     # 공유 메모리에서 데이터 읽기
-    data = Data.from_buffer(mmap_file)
-
     # buf 데이터를 numpy 배열로 변환
-    y = np.frombuffer(data.buf, dtype=np.uint8)
-
+    y = np.frombuffer(mmap_file[8:], dtype=np.uint8)
     # 정수 데이터 접근
-    sr = data.sr
-
+    sr = mmap_file[:8]
     print(time.time())
     # 이미지 ndarray
     mfcc = librosa.feature.mfcc(y=wav, sr=sr, n_mfcc=100, n_fft=400, hop_length=160)
