@@ -51,13 +51,16 @@ int main(int argc, char* argv[]){
 void waiting_repeat(unsigned int ADChandle, unsigned int min_th){
     unsigned char read_ch;
     double angle;
-    char sound_buf[CH_NUM][SOUND_BUF_SZ]={0}; //소리정보를 보관할 버퍼
+    float sound_buf[CH_NUM][SOUND_BUF_SZ]={0}; //소리정보를 보관할 버퍼
     int buf_offset=0;
+    unsigned int value;
     //루프반복
     for(read_ch=0;;read_ch=(read_ch+1)%CH_NUM){
-        sound_buf[read_ch][buf_offset]=readAnalog(ADChandle, read_ch);
+        value=readAnalog(ADChandle, read_ch);
+        //실수형으로 교체
+        sound_buf[read_ch][buf_offset]=(value)/1024.0;
         if(buf_offset==SOUND_BUF_SZ-1 && read_ch==CH_NUM-1){
-            shm_write(sound_buf[read_ch], SOUND_BUF_SZ);
+            shm_write(sound_buf[read_ch], sizeof(sound_buf[read_ch]));
             buf_offset=0;
             printf("buffer reset\n");
         }

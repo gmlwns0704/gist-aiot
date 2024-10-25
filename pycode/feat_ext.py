@@ -20,7 +20,7 @@ def pre_progressing(sound):
     # 공유메모리에서 가져오기
     # 공유 메모리에서 데이터 읽기
     # buf 데이터를 numpy 배열로 변환
-    wav = np.frombuffer(mmap_file[8:], dtype=np.uint8)
+    wav = np.frombuffer(mmap_file[8:], dtype=np.float32)
     # 정수 데이터 접근
     sr = mmap_file[:8]
     print(time.time())
