@@ -22,7 +22,7 @@ def pre_progressing(sound):
     # buf 데이터를 numpy 배열로 변환
     wav = np.frombuffer(mmap_file[8:], dtype=np.float32)
     # 정수 데이터 접근
-    sr = np.frombuffer(mmap_file[:8], dtype=np.uint8)
+    sr = np.frombuffer(mmap_file[:8], dtype=np.uint64)[0]
     print(time.time())
     # 이미지 ndarray
     mfcc = librosa.feature.mfcc(y=wav, sr=sr, n_mfcc=100, n_fft=400, hop_length=160)
