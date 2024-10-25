@@ -44,7 +44,7 @@ int shm_write(void* buf, size_t size){
         return -1;
     }
     memcpy(shm_buf.buf, buf, size);
-    shm_buf.sampling_rate=100;
+    shm_buf.sampling_rate=SAMPLING_RATE;
     memcpy(ptr, &shm_buf, sizeof(shm_buf));
     return 0;
 }
