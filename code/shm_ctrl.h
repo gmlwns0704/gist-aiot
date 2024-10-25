@@ -8,7 +8,7 @@
 
 struct s_shm_buf{
     long long sampling_rate;
-    char buf[SOUND_BUF_SZ];
+    float buf[SOUND_BUF_SZ];
 };
 
 void* shm_setting();
