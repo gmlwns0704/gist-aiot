@@ -44,6 +44,6 @@ def pre_progressing(sound):
 
 # 공유 메모리 열기
 shm_fd = open("/dev/shm/sound_raw", "rb")
-mmap_file = mmap.mmap(shm_fd.fileno(), ctypes.sizeof(Data), access=mmap.ACCESS_READ)
+mmap_file = mmap.mmap(shm_fd.fileno(), 16000+8, access=mmap.ACCESS_READ)
 
 pre_progressing('sample.wav')
