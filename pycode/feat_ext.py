@@ -15,7 +15,7 @@ pre_progressing python code
 """
 padding = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a, np.zeros((a.shape[0], i-a.shape[1]))))
 # 공유 메모리 열기
-shm_fd = open("/dev/shm/raw_data", "r+b")
+shm_fd = open("/dev/shm/sound_raw", "r+b")
 mmap_file = mmap.mmap(shm_fd.fileno(), ctypes.sizeof(Data), access=mmap.ACCESS_READ)
     
 class Data(Structure):
