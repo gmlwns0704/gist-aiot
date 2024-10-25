@@ -4,6 +4,7 @@
 #include<sys/mman.h>
 #include"const.h"
 #define SHM_NAME "sound_raw"
+#define SOUND_BUF_SZ 16000
 
 struct s_shm_buf{
     long long sampling_rate;
