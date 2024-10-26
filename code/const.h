@@ -6,3 +6,4 @@
 #define SENSOR_DIAMETER 100
 //!!! 샘플링레이트 어떻게 설정?
 #define SAMPLING_RATE 16000
+#define SOUND_BUF_SZ 16000

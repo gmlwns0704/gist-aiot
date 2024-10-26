@@ -4,6 +4,7 @@
 #include<math.h>
 
 #include"const.h"
+#include"shm_ctrl.h"
 
 /*
 각 센서는 일정 조건이 만족되는 소리가 들어오면 활성화됨
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]){
 
     //각종 초기화
     gpioInitialise();
+    shm_setting();
 
     if ((ADChandle = spiOpen(0, 1000000, 0)) < 0) {
         fprintf(stderr, "SPIOpen Err\n");
@@ -55,11 +57,11 @@ int main(int argc, char* argv[]){
 }
 
 void waiting_repeat(unsigned int ADChandle, unsigned int min_th){
-    unsigned int value;
+    float value;
     unsigned char read_ch;
     GPIO_CLOCK_TIME* listen_time; //특정 채널이 값을 읽었을 때 시간
     double angle;
-    char sound_buf[SOUND_BUF_SZ]; //소리정보를 보관할 버퍼
+    float sound_buf[SOUND_BUF_SZ]; //소리정보를 보관할 버퍼
     unsigned int maximum=0;
     //채널 갯수만큼 시간메모리 할당
     listen_time=malloc(sizeof(GPIO_CLOCK_TIME)*CH_NUM);
@@ -92,10 +94,11 @@ void waiting_repeat(unsigned int ADChandle, unsigned int min_th){
                 printf("angle; %f\n", angle);
                 //나머지 센서는 멈추고 해당 센서의 입력만 집중적으로 인식, 버퍼에 기록 시작
                 for(int i=0; i<SOUND_BUF_SZ;i++){
-                    sound_buf[i]=readAnalog(ADChandle, read_ch);
+                    sound_buf[i]=readAnalog(ADChandle, read_ch)/1024.0f;
                 }
                 //!!!공유메모리에 덮어쓰기
                 //!!!공유메모리 작성이 끝나고 파이썬 프로세스에게 전처리시작을 알릴 방법?
+                shm_write(sound_buf, sizeof(sound_buf));
                 //listen_bit초기화
                 listen_bit=0;
                 maximum=0;
