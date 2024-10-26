@@ -59,7 +59,7 @@ void waiting_repeat(unsigned int ADChandle, unsigned int min_th){
         value=readAnalog(ADChandle, read_ch);
         //실수형으로 교체
         sound_buf[read_ch][buf_offset]=(value)/1024.0;
-        printf("%lf\n",sound_buf[read_ch][buf_offset]);
+        // printf("%lf\n",sound_buf[read_ch][buf_offset]);
         if(buf_offset==SOUND_BUF_SZ-1 && read_ch==CH_NUM-1){
             shm_write(sound_buf[read_ch], sizeof(sound_buf[read_ch]));
             buf_offset=0;

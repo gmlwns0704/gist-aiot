@@ -37,7 +37,7 @@ void* shm_setting(){
     return ptr;
 }
 
-int shm_write(void* buf, size_t size){
+int shm_write(float* buf, size_t size){
     struct s_shm_buf shm_buf;
     if(size>sizeof(struct s_shm_buf)){
         fprintf(stderr,"E:buf size too big\n");

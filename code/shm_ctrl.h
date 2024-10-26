@@ -11,4 +11,4 @@ struct s_shm_buf{
 };
 
 void* shm_setting();
-int shm_write(void* buf, size_t size);
+int shm_write(float* buf, size_t size);
