@@ -1,0 +1,1 @@
+respeaker 드라이버 경로 https://github.com/HinTak/seeed-voicecard.git
