@@ -15,7 +15,7 @@ mic_positions = np.array([
 
 # 오디오 파일 읽기
 from scipy.io.wavfile import read
-fs, audio_data = read('recording.wav')
+fs, audio_data = read('sample.wav')
 
 # DOA 분석 (MUSIC 알고리즘 사용)
 doa_obj = doa.Doa(mic_positions, fs, nfft=1024)
