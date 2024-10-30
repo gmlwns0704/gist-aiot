@@ -12,6 +12,7 @@ CHUNK = 1024  # 버퍼 크기
 RECORD_SECONDS = 5  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
 MIN_VOLUME=int(input('MIN_VOLUME: '))
+SOUND_OFFSET_RATE=0.3
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
@@ -43,12 +44,12 @@ while True:
     if(volume>MIN_VOLUME):
         print('sound detected!')
         print('i:'+str(i)+'/'+str(frame_len))
-        if i>frame_len/2:
-            test_frames[:int(frame_len/2)]=frames[i-int(frame_len/2):i]
+        if i>int(frame_len*SOUND_OFFSET_RATE):
+            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i]
         else:
             test_frames[:i]=frames[:i]
-            test_frames[i:int(frame_len/2)]=frames[int(frame_len/2)+i:]
-        for j in range(int(frame_len/2),frame_len):
+            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:]
+        for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
             data=stream.read(CHUNK)
             test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
