@@ -45,7 +45,7 @@ class Respeaker():
     #4행n열로 raw데이터 읽고 numpy로 리턴
     def readRaw(self, duration):
         frames=[]
-        data=np.array([self.raw_channels,self.buffer_size])
+        data=np.zeros(self.raw_channels,self.buffer_size)
         for i in range(0, int(self.rate / self.buffer_size * duration)):
             total_data=self.stream.read(self.buffer_size)
             for j in self.raw_channels:
