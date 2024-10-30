@@ -55,7 +55,7 @@ class Respeaker():
             data=np.fromstring(self.stream.read(self.buffer_size),dtype='int16')
             print(data.shape)
             for j in self.raw_channels:
-                total_data[j,:]=data[j::self.channels]
+                total_data[j-1,:]=data[j::self.channels]
             frames.append(data)
             print(i)
         audio_data=np.vstack(frames)
