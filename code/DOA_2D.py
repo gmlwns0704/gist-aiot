@@ -42,7 +42,7 @@ while True:
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
-        print('i:{i}/{frame_len}')
+        print('i:'+str(i)+'/'+str(frame_len))
         if i>frame_len/2:
             test_frames[:int(frame_len/2)]=frames[i-int(frame_len/2):i]
         else:
@@ -57,6 +57,7 @@ while True:
 
 print("* 녹음을 종료합니다")
 print(len(test_frames))
+print()
 
 # 스트림 종료
 stream.stop_stream()
