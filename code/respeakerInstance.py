@@ -38,9 +38,12 @@ class Respeaker():
             channels=self.channels,
             rate=int(self.rate),
             frames_per_buffer=int(self.frames_size),
-            # stream_callback=self._callback,
+            stream_callback=self._callback,
             input=True
         )
+
+    def _callback(self, in_data, frame_count, time_info, status):
+        return None, pyaudio.paContinue
     
     #4행n열로 raw데이터 읽고 numpy로 리턴
     def readRaw(self, duration):
