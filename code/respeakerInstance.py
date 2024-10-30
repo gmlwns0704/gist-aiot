@@ -68,4 +68,6 @@ class Respeaker():
         return
 
 respeaker=Respeaker()
+respeaker.start()
 print(respeaker.readRaw(10))
+respeaker.stop()
