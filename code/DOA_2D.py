@@ -5,7 +5,7 @@ import wave
 def calculate_db(audio_data):
     """오디오 데이터의 RMS 값을 기반으로 데시벨(dB)을 계산합니다."""
     rms = np.sqrt(np.mean(np.square(audio_data**2)))
-    db = 20 * np.log10(rms)
+    db = 20 * np.log10(rms+1e-10)
     return db
 
 # 설정
