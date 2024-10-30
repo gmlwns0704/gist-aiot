@@ -47,9 +47,9 @@ while True:
         else:
             test_frames[:i]=frames[:i]
             test_frames[i:int(frame_len/2)]=frames[int(frame_len/2)+i:]
-        for i in range(i+1,frame_len):
+        for j in range(i+1,frame_len):
             data=stream.read(CHUNK)
-            test_frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
     if(i>=frame_len):
         i=0
