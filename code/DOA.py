@@ -14,7 +14,11 @@ mic_positions=np.array([
     [1,1,0]
 ]).T
 
-ula = arrays.Array(mic_positions)
+elem_x=mic_positions[0,:]
+elem_y=mic_positions[1,:]
+elem_z=mic_positions[2,:]
+
+ula = arrays.Array(elem_x,elem_y,elem_z)
 print(ula.arrau_position)
 
 # WAV 파일 읽기
