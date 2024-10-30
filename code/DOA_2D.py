@@ -41,8 +41,8 @@ while True:
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
-        test_frames[:i]=frames[i:]
-        test_frames[i:]=frames[:i]
+        test_frames[:len(test_frames)-i]=frames[i:]
+        test_frames[len(test_frames)-i:]=frames[:i]
         break
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
