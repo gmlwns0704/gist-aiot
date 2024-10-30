@@ -7,7 +7,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
 RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
-RECORD_SECONDS = 10  # 녹음 시간 (초)
+RECORD_SECONDS = 15  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
 
 # PyAudio 객체 생성
