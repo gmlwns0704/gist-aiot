@@ -6,6 +6,8 @@ def calculate_db(audio_data):
     """오디오 데이터의 RMS 값을 기반으로 데시벨(dB)을 계산합니다."""
     rms = np.sqrt(np.mean(audio_data**2))
     db = 20 * np.log10(rms+0.1)
+    print(rms)
+    print(db)
     return db
 
 # 설정
@@ -38,8 +40,6 @@ i=0
 while True:
     data=stream.read(CHUNK)
     frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
-    print(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS).shape)
-    print(calculate_db(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)[0]))
     i = i+1
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
