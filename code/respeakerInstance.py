@@ -38,7 +38,7 @@ class Respeaker():
             channels=self.channels,
             rate=int(self.rate),
             frames_per_buffer=int(self.frames_size),
-            stream_callback=self._callback,
+            # stream_callback=self._callback,
             input=True
         )
 
