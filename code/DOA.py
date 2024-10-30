@@ -1,25 +1,47 @@
 # https://github.com/zhiim/doa_py
 import numpy as np
-from doa import doa
+from scipy.io.wavfile import read
 
-# 샘플 레이트 설정
-fs = 16000
+from doa_py import arrays, signals
+from doa_py.algorithm import music
+from doa_py.plot import plot_spatial_spectrum
 
-# 마이크 배열 설정
-mic_positions = np.array([
-    [-1, -1, 0],
-    [1, 1, 0],
-    [1, -1, 0],
-    [-1, 1, 0]
+# 마이크배열 좌표설정
+mic_positions=np.array([
+    [-1,-1,0],
+    [-1,1,0],
+    [1,-1,0],
+    [1,1,0]
 ]).T
 
-# 오디오 파일 읽기
-from scipy.io.wavfile import read
-fs, audio_data = read('sample.wav')
+ula = arrays.Array(mic_positions)
+print(ula.arrau_position)
 
-# DOA 분석 (MUSIC 알고리즘 사용)
-doa_obj = doa.Doa(mic_positions, fs, nfft=1024)
-doa_obj.locate_sources(audio_data)
-azimuths = doa_obj.azimuth
+# WAV 파일 읽기
+fs, audio_data = read('input.wav')
+print(audio_data.shape)
 
-print(f"Estimated DOA Azimuths: {azimuths}")
+# Simulate the received data
+received_data = np.array(audio_data).T
+
+# Calculate the MUSIC spectrum
+angle_grids = np.arange(-180, 180, 1)
+spectrum = music(
+    received_data=received_data,
+    num_signal=1,
+    array=ula,
+    signal_fre=1000,
+    angle_grids=angle_grids,
+    unit="deg",
+)
+
+# Plot the spatial spectrum
+plot_spatial_spectrum(
+    spectrum=spectrum,
+    ground_truth=np.array([0, 30]),
+    angle_grids=angle_grids,
+    num_signal=2,
+)
+
+estimated_angle = angle_grids[np.argmax(spectrum)]  # 신호 1개의 최대값 추출
+print(f"Estimated DOA Angle: {estimated_angle:.2f} degrees")
