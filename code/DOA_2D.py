@@ -41,11 +41,9 @@ while True:
     buffer=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
     frames[i]=buffer
     #print(frames[i].shape) # 1024 6
-    db=calculate_db(buffer[:,0])
-    if(db>max_db):
-        max_db=db
-        print(db)
-    i = i+1
+    for i in range(CHANNELS):
+        db = calculate_db(buffer[:, i])
+        print(f"채널 {i+1} 데시벨: {db:.2f} dB")
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
 
