@@ -40,6 +40,7 @@ i=0
 while True:
     data=stream.read(CHUNK)
     frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+    calculate_db(data[0])
     i = i+1
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
