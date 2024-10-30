@@ -24,7 +24,7 @@ class Respeaker():
             dev = self.pyaudio_instance.get_device_info_by_index(i)
             name = dev['name'].encode('utf-8')
             print('{}:{} with {} input channels'.format(i, name, dev['maxInputChannels']))
-            if name.find('ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.channels:
+            if name.find(b'ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.channels:
                 device_index = i
                 break
 

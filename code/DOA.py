@@ -13,7 +13,7 @@ class DOA:
         ])
         self.music_instance=MUSIC(L=mic_position,
                     fs=16000,
-                    nfft=256 #값 수정 고려? 커질수록 정확하고 느려짐?
+                    nfft=256, #값 수정 고려? 커질수록 정확하고 느려짐?
                     num_src=1, #근원지 갯수
                     dim=3
                     )
