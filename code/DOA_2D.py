@@ -30,8 +30,9 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
 
 i=0
 while True:
-    frames[i]=stream.read(CHUNK)
-    print(frames[i])
+    data=stream.read(CHUNK)
+    frames[i]=data
+    print(data[0])
     i = i+1
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
