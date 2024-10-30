@@ -1,12 +1,7 @@
 import pyaudio
+import audioop
 import numpy as np
 import wave
-
-def calculate_db(audio_data):
-    """오디오 데이터의 RMS 값을 기반으로 데시벨(dB)을 계산합니다."""
-    rms = np.sqrt(np.mean(audio_data**2))
-    db = 20 * np.log10(rms+0.1)
-    return db
 
 # 설정
 FORMAT = pyaudio.paInt16
@@ -40,10 +35,8 @@ while True:
     data=stream.read(CHUNK)
     buffer=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
     frames[i]=buffer
-    #print(frames[i].shape) # 1024 6
-    for i in range(CHANNELS):
-        db = calculate_db(buffer[:, i])
-        print(f"채널 {i+1} 데시벨: {db:.2f} dB")
+    # data, 각 2byte
+    print(audioop.rms(data,2))
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
 
