@@ -26,7 +26,7 @@ fs, audio_data = read('sample.wav')
 print(audio_data.shape)
 
 # Simulate the received data
-received_data = np.array(audio_data).T
+received_data = np.array(audio_data)
 print(received_data)
 
 # Calculate the MUSIC spectrum
