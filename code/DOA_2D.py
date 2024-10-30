@@ -42,12 +42,13 @@ while True:
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
+        print('i:{i}/{frame_len}')
         if i>frame_len/2:
             test_frames[:int(frame_len/2)]=frames[i-int(frame_len/2):i]
         else:
             test_frames[:i]=frames[:i]
             test_frames[i:int(frame_len/2)]=frames[int(frame_len/2)+i:]
-        for j in range(i+1,frame_len):
+        for j in range(int(frame_len/2),frame_len):
             data=stream.read(CHUNK)
             test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
