@@ -19,7 +19,7 @@ elem_y=mic_positions[1,:]
 elem_z=mic_positions[2,:]
 
 ula = arrays.Array(elem_x,elem_y,elem_z)
-print(ula.array_position())
+print(ula._element_position)
 
 # WAV 파일 읽기
 fs, audio_data = read('input.wav')
