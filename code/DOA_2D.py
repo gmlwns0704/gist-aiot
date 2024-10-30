@@ -30,7 +30,7 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
 
-test_frames=frames
+test_frames=[0 for i in range(len(frames))]
 i=0
 max_db=0
 while True:
