@@ -69,7 +69,7 @@ class Respeaker():
 print('start respeaker record test')
 respeaker=Respeaker()
 respeaker.start()
-ret_np, ret_frame = respeaker.readRaw(input('duration: '))
+ret_np, ret_frame = respeaker.readRaw(int(input('duration: ')))
 respeaker.stop()
 
 wf = wave.open('sample.wav', 'wb')
