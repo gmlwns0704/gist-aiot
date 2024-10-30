@@ -8,7 +8,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
 RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
-RECORD_SECONDS = 3  # 녹음 시간 (초)
+RECORD_SECONDS = 5  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
 MIN_VOLUME=int(input('MIN_VOLUME: '))
 
@@ -41,8 +41,8 @@ while True:
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
-        test_frames[:len(test_frames)-i]=frames[i:]
-        test_frames[len(test_frames)-i:]=frames[:i]
+        test_frames[:len(test_frames)-i-1]=frames[i+1:]
+        test_frames[len(test_frames)-i-1:]=frames[:i+1]
         break
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
