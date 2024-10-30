@@ -40,6 +40,7 @@ while True:
     # data, 각 2byte
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
+        print('sound detected!')
         test_frames[:i]=frames[i:]
         test_frames[i:]=frames[:i]
         break
