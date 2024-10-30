@@ -2,6 +2,12 @@ import pyaudio
 import numpy as np
 import wave
 
+def calculate_db(audio_data):
+    """오디오 데이터의 RMS 값을 기반으로 데시벨(dB)을 계산합니다."""
+    rms = np.sqrt(np.mean(np.square(audio_data)))
+    db = 20 * np.log10(rms) if rms > 0 else -np.inf
+    return db
+
 # 설정
 FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
@@ -31,8 +37,8 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
 i=0
 while True:
     data=stream.read(CHUNK)
-    frames[i]=data
-    print(data[0])
+    frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+    db=calculate_db(np.frombuffer(data[0], dtype=np.int16).reshape(-1, 1))
     i = i+1
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
