@@ -39,13 +39,6 @@ spectrum = music(
     unit="deg",
 )
 
-# Plot the spatial spectrum
-plot_spatial_spectrum(
-    spectrum=spectrum,
-    ground_truth=np.array([0, 30]),
-    angle_grids=angle_grids,
-    num_signal=2,
-)
-
+print(spectrum)
 estimated_angle = angle_grids[np.argmax(spectrum)]  # 신호 1개의 최대값 추출
 print(f"Estimated DOA Angle: {estimated_angle:.2f} degrees")
