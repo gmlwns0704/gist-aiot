@@ -10,6 +10,7 @@ RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
 RECORD_SECONDS = 3  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
+MIN_VOLUME=500
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
@@ -29,6 +30,7 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
 
+test_frames=frames
 i=0
 max_db=0
 while True:
@@ -36,7 +38,11 @@ while True:
     buffer=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
     frames[i]=buffer
     # data, 각 2byte
-    print(audioop.rms(data,2))
+    volume=audioop.rms(data,2)
+    if(volume>MIN_VOLUME):
+        test_frames[:i]=frames[i:]
+        test_frames[i:]=frames[:i]
+        break
     if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
         i=0
 
@@ -48,7 +54,7 @@ stream.close()
 p.terminate()
 
 # 데이터 배열을 결합
-audio_data = np.vstack(frames)
+audio_data = np.vstack(test_frames)
 # n채널에서 데이터 가져오기: audio_data[:,n]
 
 # 각 채널별로 WAV 파일로 저장
