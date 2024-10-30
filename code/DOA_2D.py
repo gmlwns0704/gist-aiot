@@ -48,6 +48,7 @@ while True:
         i=0
 
 print("* 녹음을 종료합니다")
+print(len(test_frames))
 
 # 스트림 종료
 stream.stop_stream()
