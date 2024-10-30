@@ -51,7 +51,7 @@ class Respeaker():
         total_data=np.zeros([len(self.raw_channels),self.buffer_size])
         print(total_data.shape)
         for i in range(0, int(self.rate / self.buffer_size * duration)):
-            data=np.fromstring(self.stream.read(self.buffer_size),dtype='int16')
+            data=np.fromstring(self.stream.read(self.buffer_size, exception_on_overflow = False),dtype='int16')
             for j in self.raw_channels:
                 total_data[j-1,:]=data[j::self.channels]
             frames.append(data)
