@@ -7,7 +7,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
 RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
-RECORD_SECONDS = 15  # 녹음 시간 (초)
+RECORD_SECONDS = 8  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
 
 # PyAudio 객체 생성
@@ -28,6 +28,14 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
 
+i=0
+while True:
+    frames[i]=stream.read(CHUNK)
+    i = i+1
+    if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
+        print(frames)
+        i=0
+
 print("* 녹음을 종료합니다")
 
 # 스트림 종료
@@ -37,6 +45,7 @@ p.terminate()
 
 # 데이터 배열을 결합
 audio_data = np.vstack(frames)
+# n채널에서 데이터 가져오기: audio_data[:,n]
 
 # 각 채널별로 WAV 파일로 저장
 for channel in range(CHANNELS):
