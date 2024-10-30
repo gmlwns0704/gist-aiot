@@ -1,7 +1,11 @@
 from tuning import Tuning
+
 import usb.core
 import usb.util
 import time
+import pyaudio
+import numpy as np
+import wave
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 6
