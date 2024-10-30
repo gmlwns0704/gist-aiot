@@ -63,4 +63,4 @@ class Respeaker():
         return
 
 respeaker=Respeaker()
-print(respeaker.readRaw())
+print(respeaker.readRaw(10))
