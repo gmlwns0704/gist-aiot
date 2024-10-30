@@ -26,7 +26,8 @@ stream = p.open(format=FORMAT,
 print("* 초기 프레임 생성중")
 frames = []
 test_frames=[]
-for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
+for _ in range(frame_len):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
     test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
@@ -36,17 +37,21 @@ i=0
 max_db=0
 while True:
     data=stream.read(CHUNK)
-    buffer=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
-    frames[i]=buffer
+    frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
     # data, 각 2byte
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
-        time.sleep(2.5)
-        test_frames[:len(test_frames)-i-1]=frames[i+1:]
-        test_frames[len(test_frames)-i-1:]=frames[:i+1]
+        if i>frame_len/2:
+            test_frames[:int(frame_len/2)]=frames[i-int(frame_len/2):i]
+        else:
+            test_frames[:i]=frames[:i]
+            test_frames[i:int(frame_len/2)]=frames[int(frame_len/2)+i:]
+        for i in range(i+1,frame_len):
+            data=stream.read(CHUNK)
+            test_frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
-    if(i>=int(RATE / CHUNK * RECORD_SECONDS)):
+    if(i>=frame_len):
         i=0
 
 print("* 녹음을 종료합니다")
