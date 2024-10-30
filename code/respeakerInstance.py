@@ -66,9 +66,10 @@ class Respeaker():
         self.stream.stop_stream()
         return
 
+print('start respeaker record test')
 respeaker=Respeaker()
 respeaker.start()
-ret_np, ret_frame = respeaker.readRaw(10)
+ret_np, ret_frame = respeaker.readRaw(input('duration: '))
 respeaker.stop()
 
 wf = wave.open('sample.wav', 'wb')
