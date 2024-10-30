@@ -22,8 +22,7 @@ stream = p.open(format=FORMAT,
                 input=True,
                 frames_per_buffer=CHUNK)
 
-print("* 녹음을 시작합니다")
-
+print("* 초기 프레임 생성중")
 frames = []
 test_frames=[]
 for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
@@ -31,6 +30,7 @@ for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
     test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
 
+print("* 녹음을 시작합니다")
 i=0
 max_db=0
 while True:
