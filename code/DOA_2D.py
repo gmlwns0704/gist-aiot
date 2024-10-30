@@ -52,6 +52,7 @@ while True:
             data=stream.read(CHUNK)
             test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
+    i = i+1
     if(i>=frame_len):
         i=0
 
