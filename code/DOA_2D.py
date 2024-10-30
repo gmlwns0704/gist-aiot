@@ -2,6 +2,7 @@ import pyaudio
 import audioop
 import numpy as np
 import wave
+import time
 
 # 설정
 FORMAT = pyaudio.paInt16
@@ -41,6 +42,7 @@ while True:
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
         print('sound detected!')
+        time.sleep(2.5)
         test_frames[:len(test_frames)-i-1]=frames[i+1:]
         test_frames[len(test_frames)-i-1:]=frames[:i+1]
         break
