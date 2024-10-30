@@ -22,7 +22,7 @@ ula = arrays.Array(elem_x,elem_y,elem_z)
 print(ula._element_position)
 
 # WAV 파일 읽기
-fs, audio_data = read('input.wav')
+fs, audio_data = read('sample.wav')
 print(audio_data.shape)
 
 # Simulate the received data
