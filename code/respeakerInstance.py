@@ -45,21 +45,18 @@ class Respeaker():
     def _callback(self, in_data, frame_count, time_info, status):
         return None, pyaudio.paContinue
     
-    #4행n열로 raw데이터 읽고 numpy로 리턴
+    #4행n열로 raw데이터 읽고 numpy, frames로 리턴
     def readRaw(self, duration):
         frames=[]
         total_data=np.zeros([len(self.raw_channels),self.buffer_size])
         print(total_data.shape)
         for i in range(0, int(self.rate / self.buffer_size * duration)):
-            print(i)
             data=np.fromstring(self.stream.read(self.buffer_size),dtype='int16')
-            print(data.shape)
             for j in self.raw_channels:
                 total_data[j-1,:]=data[j::self.channels]
             frames.append(data)
-            print(i)
         audio_data=np.vstack(frames)
-        return audio_data
+        return audio_data, frames
 
     def start(self):
         self.stream.start_stream()
@@ -71,5 +68,12 @@ class Respeaker():
 
 respeaker=Respeaker()
 respeaker.start()
-print(respeaker.readRaw(10))
+ret_np, ret_frame = respeaker.readRaw(10)
 respeaker.stop()
+
+wf = wave.open('sample.wav', 'wb')
+wf.setnchannels(4)
+wf.setsampwidth(respeaker.pyaudio_instance.get_sample_size(pyaudio.paInt16))
+wf.setframerate(respeaker.rate)
+wf.writeframes(b''.join(ret_frame))
+wf.close()
