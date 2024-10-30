@@ -49,6 +49,7 @@ class Respeaker():
     def readRaw(self, duration):
         frames=[]
         total_data=np.zeros([len(self.raw_channels),self.buffer_size])
+        print(total_data.shape)
         for i in range(0, int(self.rate / self.buffer_size * duration)):
             print(i)
             data=np.fromstring(self.stream.read(self.buffer_size),dtype='int16')
