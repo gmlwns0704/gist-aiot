@@ -38,9 +38,10 @@ i=0
 max_db=0
 while True:
     data=stream.read(CHUNK)
-    frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
-    #print(frames[i].shape)
-    db=calculate_db(frames[i][:,0])
+    buffer=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+    frames[i]=buffer
+    #print(frames[i].shape) # 1024 6
+    db=calculate_db(buffer[:,0])
     if(db>max_db):
         max_db=db
         print(db)
