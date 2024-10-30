@@ -10,7 +10,7 @@ RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
 RECORD_SECONDS = 3  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
-MIN_VOLUME=500
+MIN_VOLUME=int(input('MIN_VOLUME: '))
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
