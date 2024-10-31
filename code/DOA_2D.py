@@ -4,6 +4,7 @@ import numpy as np
 import wave
 import time
 import sys
+import torch
 
 sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
@@ -90,9 +91,11 @@ stream.close()
 p.terminate()
 
 #실수화(librosa는 실수값으로 작동)
-test_frames = np.array(test_frames, dtype=np.int16).T
+test_frames_np_int = np.array(test_frames, dtype=np.int16).T
 # 2. float32로 변환하고 -1.0 ~ 1.0 범위로 정규화
-test_frames = test_frames.astype(np.float32) / 32768.0
+test_frames_np_float = test_frames.astype(np.float32) / 32768.0
+
+test_tensor = torch.from_numpy(test_frames_np_float).unsqueeze(0)
 
 #모델에 넣기위한 작업과정
 feat = mfcc.pre_progressing(test_frames, RATE)
