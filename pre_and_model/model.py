@@ -84,8 +84,7 @@ class CNNModel(nn.Module):
 
         return x
 
-
-class SR_Model():
+class Rasp_Model():
     def __init__(self):    
         # Model instantiation
         self.model = CNNModel()
@@ -99,6 +98,6 @@ class SR_Model():
         self.model.eval()
         return self.model(input)
     
-    def test_sample(self):
+    def test_from_image(self):
         img = Image.open('./sample.jpg').convert('L')
         return self.test(img)

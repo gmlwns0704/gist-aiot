@@ -2,10 +2,9 @@
 from PIL import Image
 import librosa
 import numpy as np
-
-padding = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a, np.zeros((a.shape[0], i-a.shape[1]))))
-
 def pre_progressing(filename, size=[32,32]):
+    padding = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a, np.zeros((a.shape[0], i-a.shape[1]))))
+
     if '.wav' not in filename:
         print('not .wav file')
         return
