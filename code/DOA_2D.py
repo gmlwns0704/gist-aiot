@@ -3,8 +3,11 @@ import audioop
 import numpy as np
 import wave
 import time
+import sys
 
-from venv.usb_4_mic_array.tuning import Tuning
+sys.path.append('/home/rasp/venv/')
+
+from usb_4_mic_array.tuning import Tuning
 import usb.core
 import usb.util
 
