@@ -88,7 +88,7 @@ class Rasp_Model():
     def __init__(self):    
         # Model instantiation
         self.model = CNNModel()
-        self.model.load_state_dict(torch.load('./model_parameter.pth'))
+        self.model.load_state_dict(torch.load('./model_parameter.pth', map_location=torch.device('cpu')))
         # # Loss and Optimizer
         # self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         # self.criterion = nn.CrossEntropyLoss()
