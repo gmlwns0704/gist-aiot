@@ -71,7 +71,7 @@ class DOA_2D_listener():
         test_frames=[]
         frame_len=(int(self.RATE / self.CHUNK * self.RECORD_SECONDS))
         for i in range(frame_len):
-            data = self.STREAM.read(self.CHUNK)
+            data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
             frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
             test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
 
@@ -79,7 +79,7 @@ class DOA_2D_listener():
         print(np.array(frames).shape)
         i=0
         while True:
-            data=self.STREAM.read(self.CHUNK)
+            data=self.STREAM.read(self.CHUNK, exception_on_overflow=False)
             frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
             # data, 각 2byte
             volume=audioop.rms(data,2)
@@ -91,8 +91,9 @@ class DOA_2D_listener():
                     test_frames[:i]=frames[:i]
                     test_frames[i:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[int(frame_len*self.SOUND_PRE_OFFSET)+i:]
                 for j in range(int(frame_len*self.SOUND_PRE_OFFSET),frame_len):
-                    data=self.STREAM.read(self.CHUNK)
+                    data=self.STREAM.read(self.CHUNK, exception_on_overflow=False)
                     test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
+                print('record done, start callback function')
                 self.DETECT_CALLBACK(test_frames, angle)
             i = i+1
             if(i>=frame_len):
