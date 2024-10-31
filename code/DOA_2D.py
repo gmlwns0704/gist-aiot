@@ -21,7 +21,7 @@ def soundDataToFloat(SD):
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
 
 # 설정
-FORMAT = pyaudio.paFloat32
+FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
 RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
