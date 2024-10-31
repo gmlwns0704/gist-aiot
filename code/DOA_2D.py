@@ -95,9 +95,8 @@ test_frames_np_int = np.array(test_frames, dtype=np.int16).T
 # 2. float32로 변환하고 -1.0 ~ 1.0 범위로 정규화
 test_frames_np_float = test_frames_np_int.astype(np.float32) / 32768.0
 
-test_tensor = torch.from_numpy(test_frames_np_float).unsqueeze(0)
-
 #모델에 넣기위한 작업과정
-feat = mfcc.pre_progressing(test_tensor, RATE)
+feat = mfcc.pre_progressing(test_frames_np_float, RATE)
+test_tensor = torch.from_numpy(test_frames_np_float).unsqueeze(0)
 result = rasp_model.test_by_feat(feat)
 print(result)
