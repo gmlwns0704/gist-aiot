@@ -3,7 +3,7 @@ from scipy.io.wavfile import read
 import pyroomacoustics as pra
 
 # 샘플 WAV 파일 읽기
-fs, audio_data = read('input.wav')
+fs, audio_data = read('output_selected_channels.wav')
 
 # FFT 길이 설정
 nfft = 256
