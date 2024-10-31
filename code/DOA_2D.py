@@ -89,7 +89,7 @@ stream.close()
 p.terminate()
 
 #실수화(librosa는 실수값으로 작동)
-test_frames_np = np.array(test_frames[:][:][0], dtype=np.int16).flatten()
+test_frames_np = np.array(test_frames[:][:][0], dtype=np.float32).flatten()
 #모델에 넣기위한 작업과정
 feat = mfcc.pre_progressing(test_frames_np, RATE)
 result = rasp_model.test_by_feat(feat)
