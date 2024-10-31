@@ -47,11 +47,9 @@ for i, chunk in enumerate(audio_data_chunks):
     )
     print(X.shape)
     doa.locate_sources(X)
-    azimuths = doa.grid.azimuth
-    max_indices = np.argmax(doa.pseudo_spectrum, axis=0)  # 가장 큰 스펙트럼 인덱스
+    azimuth = doa.azimuth
 
-    if azimuths is not None:
-        estimated_angles = np.degrees(azimuths[max_indices])
-        print(f"Estimated DOA angles: {estimated_angles} degrees")
+    if azimuth is not None:
+        print(f"Estimated DOA angles: {azimuth*np.pi/180} degrees")
     else:
         print("DOA estimation failed.")
