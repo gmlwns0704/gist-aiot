@@ -102,7 +102,8 @@ X = np.array(
         for signal in aroom.mic_array.signals
     ]
 )
-
+for signal in aroom.mic_array.signals:
+    print(signal.shape)
 print(X.shape)
 
 ##############################################
