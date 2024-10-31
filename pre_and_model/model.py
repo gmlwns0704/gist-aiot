@@ -112,4 +112,4 @@ class Rasp_Model():
         # 이미지를 텐서로 변환
         input_tensor = self.img_transform(img).unsqueeze(0)  
         print('transform done')
-        return self.test(input_tensor)
+        return self.model(input_tensor)
