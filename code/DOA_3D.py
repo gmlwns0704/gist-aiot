@@ -21,6 +21,10 @@ mic_positions = np.array([
     [1, -1, 0]
 ]).T  # (3, M) 형식으로 변환
 
+M=4
+F=int(nfft/2)+1
+S=
+
 # MUSIC 알고리즘을 사용하여 DOA 추정
 doa = pra.doa.music.MUSIC(mic_positions, fs, nfft=nfft, c=343)
 chunk_size=1024

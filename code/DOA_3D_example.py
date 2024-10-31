@@ -103,6 +103,8 @@ X = np.array(
     ]
 )
 
+print(X.shape)
+
 ##############################################
 # Now we can test all the algorithms available
 algo_names = sorted(pra.doa.algorithms.keys())
