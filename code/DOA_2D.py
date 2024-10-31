@@ -20,87 +20,97 @@ def soundDataToFloat(SD):
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
 
-# 설정
-FORMAT = pyaudio.paInt16
-CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
-RATE = 16000  # 샘플 레이트
-CHUNK = 1024  # 버퍼 크기
-RECORD_SECONDS = 3  # 녹음 시간 (초)
-WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
-MIN_VOLUME=int(input('MIN_VOLUME: '))
-SOUND_OFFSET_RATE=0.3
-
-# PyAudio 객체 생성
-p = pyaudio.PyAudio()
-
-# 모델객체 생성
-rasp_model = model.Rasp_Model()
-
-# resepeaker찾기
-dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
-
-if not dev:
-    print('device not found')
-    quit()
-Mic_tuning=Tuning(dev)
-
-# 입력 스트림 설정
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
-
-print("* generating initial frames")
-frames = []
-test_frames=[]
-frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
-for i in range(frame_len):
-    data = stream.read(CHUNK)
-    frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
-    test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
-
-print("* waiting for loud volume")
-print(np.array(frames).shape)
-i=0
-while True:
-    data=stream.read(CHUNK)
-    frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
-    # data, 각 2byte
-    volume=audioop.rms(data,2)
-    if(volume>MIN_VOLUME):
-        print('sound detected!')
-        angle=Mic_tuning.direction
-        print('angle:'+str(angle))
-        print('i:'+str(i)+'/'+str(frame_len))
-        if i>int(frame_len*SOUND_OFFSET_RATE):
-            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i]
+class DOA_2D_listener():
+    def __init__(self,
+                 channels=6,
+                 sr=16000,
+                 chunk=1024,
+                 record_seconds=3,
+                 min_volume=1500,
+                 sound_pre_offset=0.3,
+                 detect_callback=None,
+                 model=None):
+        self.FORMAT = pyaudio.paInt16
+        self.CHANNELS = channels
+        self.RATE = sr
+        self.CHUNK = chunk
+        self.RECORD_SECONDS = record_seconds
+        self.MIN_VOLUME=min_volume
+        self.SOUND_PRE_OFFSET=sound_pre_offset
+        if detect_callback is None:
+            self.DETECT_CALLBACK=self.default_callback
         else:
-            test_frames[:i]=frames[:i]
-            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:]
-        for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
-            data=stream.read(CHUNK)
-            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
-        break
-    i = i+1
-    if(i>=frame_len):
+            self.DETECT_CALLBACK=detect_callback
+
+        # PyAudio 객체 생성
+        self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
+        
+        # 모델 객체 생성
+        if model is None:
+            self.MODEL = model.Rasp_Model()
+        else:
+            self.MODEL = model
+            
+        # resepeaker찾기
+        # DOAANGLE에 사용
+        self.dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
+        if not self.dev:
+            print('device not found')
+            return None
+        self.Mic_tuning=Tuning(self.dev)
+
+        # 입력 스트림 설정
+        stream = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
+                        channels=self.CHANNELS,
+                        rate=self.RATE,
+                        input=True,
+                        frames_per_buffer=self.CHUNK)
+    
+    def start_detect(self):
+        frames = []
+        test_frames=[]
+        frame_len=(int(self.RATE / self.CHUNK * self.RECORD_SECONDS))
+        for i in range(frame_len):
+            data = self.stream.read(self.CHUNK)
+            frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
+            test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
+
+        print("* waiting for loud volume")
+        print(np.array(frames).shape)
         i=0
-
-print("* recorded")
-
-# 스트림 종료
-stream.stop_stream()
-stream.close()
-p.terminate()
-
-print(np.array(test_frames).shape)
-
-#실수화(librosa는 실수값으로 작동)
-#0번채널만 추출
-test_frames_np_float = soundDataToFloat(np.array(test_frames)[:,:,0]).flatten()
-print(test_frames_np_float.shape)
-
-#모델에 넣기위한 작업과정s
-feat = mfcc.pre_progressing(test_frames_np_float, RATE)
-result = rasp_model.test_by_feat(feat)
-print(result)
+        while True:
+            data=self.stream.read(self.CHUNK)
+            frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
+            # data, 각 2byte
+            volume=audioop.rms(data,2)
+            if(volume>self.MIN_VOLUME):
+                angle=self.Mic_tuning.direction
+                if i>int(frame_len*self.SOUND_OFFSET_RATE):
+                    test_frames[:int(frame_len*self.SOUND_OFFSET_RATE)]=frames[i-int(frame_len*self.SOUND_OFFSET_RATE):i]
+                else:
+                    test_frames[:i]=frames[:i]
+                    test_frames[i:int(frame_len*self.SOUND_OFFSET_RATE)]=frames[int(frame_len*self.SOUND_OFFSET_RATE)+i:]
+                for j in range(int(frame_len*self.SOUND_OFFSET_RATE),frame_len):
+                    data=self.stream.read(self.CHUNK)
+                    test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
+                self.DETECT_CALLBACK(test_frames, angle)
+            i = i+1
+            if(i>=frame_len):
+                i=0
+    
+    def default_callback(self, test_frames, angle):
+        #실수화(librosa는 실수값으로 작동)
+        #0번채널만 추출
+        test_frames_np_float = soundDataToFloat(np.array(test_frames)[:,:,0]).flatten()
+        #모델에 넣기위한 작업과정
+        feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
+        result = self.MODEL.test_by_feat(feat)
+        print(result)
+        print(angle)
+        return
+    
+    def stop(self):
+        # 스트림 종료
+        self.stream.stop_stream()
+        self.stream.close()
+        self.PYAUDIO_INSTANCE.terminate()
