@@ -6,7 +6,7 @@ import pyroomacoustics as pra
 fs, audio_data = read('output_selected_channels.wav')
 
 # FFT 길이 설정
-nfft = 256
+nfft = 32
 
 # 주파수 분해능 계산
 frequency_resolution = fs / nfft
@@ -26,6 +26,7 @@ doa = pra.doa.music.MUSIC(mic_positions, fs, nfft, c=343)
 # 음원 방향 추정 (데이터를 FFT 길이에 맞춰 분할)
 audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
 print(audio_data_chunks)
+print(len(audio_data_chunks))
 for chunk in audio_data_chunks:
     print(chunk)
     if chunk.shape[1] != nfft:
