@@ -115,12 +115,7 @@ for algo_name in algo_names:
     # this call here perform localization on the frames in X
     doa.locate_sources(X, freq_bins=freq_bins)
 
-    doa.polar_plt_dirac()
-    plt.title(algo_name)
-
     # doa.azimuth_recon contains the reconstructed location of the source
     print(algo_name)
     print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")
     print("  Error:", circ_dist(azimuth, doa.azimuth_recon) / np.pi * 180.0, "degrees")
-
-plt.show()
