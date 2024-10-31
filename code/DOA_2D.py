@@ -93,7 +93,7 @@ p.terminate()
 print(np.array(test_frames).shape)
 
 #실수화(librosa는 실수값으로 작동)
-test_frames_np_int = np.array(test_frames[:][0], dtype=np.int16).T
+test_frames_np_int = np.array(test_frames[:][:][0], dtype=np.int16).flatten()
 print(test_frames_np_int)
 print(test_frames_np_int.shape)
 # 2. float32로 변환하고 -1.0 ~ 1.0 범위로 정규화
