@@ -47,7 +47,7 @@ for i, chunk in enumerate(audio_data_chunks):
     )
     print(X.shape)
     doa.locate_sources(X)
-    azimuth = doa.azimuth
+    azimuth = doa.azimuth_recon
 
     if azimuth is not None:
         print(f"Estimated DOA angles: {azimuth*np.pi/180} degrees")
