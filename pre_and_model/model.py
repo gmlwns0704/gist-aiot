@@ -4,6 +4,7 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision.transforms as transforms
 
 from PIL import Image
 
@@ -100,4 +101,12 @@ class Rasp_Model():
     
     def test_from_image(self):
         img = Image.open('./sample.jpg').convert('L')
-        return self.test(img)
+        print('image load done')
+        transform = transforms.Compose([
+            transforms.Resize((32, 32)),
+            transforms.ToTensor()
+        ])
+        # 이미지를 텐서로 변환
+        input_tensor = transform(img).unsqueeze(0)  
+        print('transform done')
+        return self.test(input_tensor)
