@@ -39,9 +39,12 @@ for i, chunk in enumerate(audio_data_chunks):
     print(f"Chunk {i+1}: shape {chunk.shape}")
     if chunk.shape[0] < nfft:
         continue  # 청크의 크기가 FFT 길이보다 작은 경우 건너뜀
-    stft_frames = pra.transform.stft.analysis(chunk.T, nfft, nfft // 2).T
-    print(stft_frames.shape)
-    X = stft_frames[:,:,:S]  # 스냅샷 수 만큼만 선택
+    X = np.array(
+        [
+            pra.transform.stft.analysis(signal, nfft, nfft // 2).T
+            for signal in chunk
+        ]
+    )
     print(X.shape)
     doa.locate_sources(X)
     azimuths = doa.grid.azimuth
