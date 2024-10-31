@@ -27,6 +27,7 @@ doa = pra.doa.music.MUSIC(mic_positions, fs, nfft, c=343)
 audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
 print(audio_data_chunks)
 for chunk in audio_data_chunks:
+    print(chunk)
     if chunk.shape[1] != nfft:
         continue  # 마지막 청크는 nfft와 다를 수 있음
     doa.locate_sources(chunk)
