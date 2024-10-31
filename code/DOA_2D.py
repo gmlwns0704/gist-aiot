@@ -30,8 +30,7 @@ class DOA_2D_listener():
                  min_volume=1500,
                  sound_pre_offset=0.3,
                  detect_callback=None,
-                 input_model=None,
-                 max_thread_num=3):
+                 input_model=None):
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = channels
         self.RATE = sr
@@ -43,10 +42,7 @@ class DOA_2D_listener():
             self.DETECT_CALLBACK=self.default_callback
         else:
             self.DETECT_CALLBACK=detect_callback
-        self.CALLBACK_THREAD_LIST=[]
-        for i in range(max_thread_num):
-            self.CALLBACK_THREAD_LIST.append(threading.Thread(target=self.DETECT_CALLBACK))
-
+            
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
         
@@ -104,12 +100,9 @@ class DOA_2D_listener():
                     continue
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
-                for th in self.CALLBACK_THREAD_LIST:
-                    if not th.is_alive():
-                        th.start()
-                        break
-                    if th is self.CALLBACK_THREAD_LIST[-1]:
-                        print('thread is full, ignore')
+                th=threading.Thread(target=self.DETECT_CALLBACK)
+                th.start()
+                print('thread call done')
             # i++
             i = (i+1)%frame_len
     
