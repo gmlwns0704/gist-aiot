@@ -9,8 +9,8 @@ fs, audio_data = read('output_selected_channels.wav')
 # nfft = 32
 
 # 주파수 분해능 계산
-frequency_resolution = fs / nfft
-print(f"주파수 분해능: {frequency_resolution} Hz")
+# frequency_resolution = fs / nfft
+# print(f"주파수 분해능: {frequency_resolution} Hz")
 print(audio_data.shape)
 
 # 마이크 배열 설정 (주어진 좌표 사용)
