@@ -103,8 +103,9 @@ class Rasp_Model():
         img = Image.open('./sample.jpg').convert('L')
         print('image load done')
         transform = transforms.Compose([
-            transforms.Resize((32, 32)),
-            transforms.ToTensor()
+            transforms.Resize((32, 32)),          # 모델에 맞는 크기로 조정
+            transforms.Grayscale(num_output_channels=3),  # 3채널로 변환
+            transforms.toTensor()
         ])
         # 이미지를 텐서로 변환
         input_tensor = transform(img).unsqueeze(0)  
