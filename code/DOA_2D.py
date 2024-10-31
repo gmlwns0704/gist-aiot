@@ -60,7 +60,7 @@ class DOA_2D_listener():
         self.Mic_tuning=Tuning(self.dev)
 
         # 입력 스트림 설정
-        stream = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
+        self.STREAM = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
                         channels=self.CHANNELS,
                         rate=self.RATE,
                         input=True,
@@ -71,7 +71,7 @@ class DOA_2D_listener():
         test_frames=[]
         frame_len=(int(self.RATE / self.CHUNK * self.RECORD_SECONDS))
         for i in range(frame_len):
-            data = self.stream.read(self.CHUNK)
+            data = self.STREAM.read(self.CHUNK)
             frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
             test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
 
@@ -79,7 +79,7 @@ class DOA_2D_listener():
         print(np.array(frames).shape)
         i=0
         while True:
-            data=self.stream.read(self.CHUNK)
+            data=self.STREAM.read(self.CHUNK)
             frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
             # data, 각 2byte
             volume=audioop.rms(data,2)
@@ -91,7 +91,7 @@ class DOA_2D_listener():
                     test_frames[:i]=frames[:i]
                     test_frames[i:int(frame_len*self.SOUND_OFFSET_RATE)]=frames[int(frame_len*self.SOUND_OFFSET_RATE)+i:]
                 for j in range(int(frame_len*self.SOUND_OFFSET_RATE),frame_len):
-                    data=self.stream.read(self.CHUNK)
+                    data=self.STREAM.read(self.CHUNK)
                     test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 self.DETECT_CALLBACK(test_frames, angle)
             i = i+1
@@ -111,6 +111,6 @@ class DOA_2D_listener():
     
     def stop(self):
         # 스트림 종료
-        self.stream.stop_stream()
-        self.stream.close()
+        self.STREAM.stop_stream()
+        self.STREAM.close()
         self.PYAUDIO_INSTANCE.terminate()
