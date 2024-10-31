@@ -73,10 +73,10 @@ while True:
         print('angle:'+str(angle))
         print('i:'+str(i)+'/'+str(frame_len))
         if i>int(frame_len*SOUND_OFFSET_RATE):
-            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i,0]
+            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i][0]
         else:
             test_frames[:i]=frames[:i]
-            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:,0]
+            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:][0]
         for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
             data=stream.read(CHUNK)
             test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)[:,0]
