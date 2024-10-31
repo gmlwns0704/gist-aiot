@@ -82,8 +82,7 @@ class DOA_2D_listener():
             data=self.STREAM.read(self.CHUNK, exception_on_overflow=False)
             frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
             # data, 각 2byte
-            print(np.frombuffer(data, dtype=np.int16).shape)
-            volume=audioop.rms(data,2)
+            volume=audioop.rms(data[:,1:4],2)
             if(volume>self.MIN_VOLUME):
                 print('loud sound detected')
                 self.angle=self.Mic_tuning.direction
