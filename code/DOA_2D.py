@@ -85,12 +85,12 @@ class DOA_2D_listener():
             volume=audioop.rms(data,2)
             if(volume>self.MIN_VOLUME):
                 angle=self.Mic_tuning.direction
-                if i>int(frame_len*self.SOUND_OFFSET_RATE):
-                    test_frames[:int(frame_len*self.SOUND_OFFSET_RATE)]=frames[i-int(frame_len*self.SOUND_OFFSET_RATE):i]
+                if i>int(frame_len*self.SOUND_PRE_OFFSET):
+                    test_frames[:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[i-int(frame_len*self.SOUND_PRE_OFFSET):i]
                 else:
                     test_frames[:i]=frames[:i]
-                    test_frames[i:int(frame_len*self.SOUND_OFFSET_RATE)]=frames[int(frame_len*self.SOUND_OFFSET_RATE)+i:]
-                for j in range(int(frame_len*self.SOUND_OFFSET_RATE),frame_len):
+                    test_frames[i:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[int(frame_len*self.SOUND_PRE_OFFSET)+i:]
+                for j in range(int(frame_len*self.SOUND_PRE_OFFSET),frame_len):
                     data=self.STREAM.read(self.CHUNK)
                     test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 self.DETECT_CALLBACK(test_frames, angle)
