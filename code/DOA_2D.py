@@ -95,10 +95,6 @@ class DOA_2D_listener():
                 for j in range(x,frame_len):
                     data=self.STREAM.read(self.CHUNK, exception_on_overflow=False)
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
-                if self.Mic_tuning.is_voice():
-                    print('voice detected, skip')
-                    i=0
-                    continue
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
                 th=threading.Thread(target=self.DETECT_CALLBACK)
