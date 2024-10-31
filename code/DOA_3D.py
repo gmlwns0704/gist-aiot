@@ -21,14 +21,15 @@ mic_positions = np.array([
     [1, -1, 0]
 ]).T  # (3, M) 형식으로 변환
 
-M=4
-F=int(nfft/2)+1
-S=
-
 # MUSIC 알고리즘을 사용하여 DOA 추정
 doa = pra.doa.music.MUSIC(mic_positions, fs, nfft=nfft, c=343)
 chunk_size=1024
 audio_data_chunks = [audio_data[i:i+chunk_size, :] for i in range(0, audio_data.shape[0], chunk_size)]
+
+M=4
+F=int(nfft/2)+1
+S=len(audio_data_chunks)
+print(M*F*S)
 
 # 분할된 청크 확인
 for i, chunk in enumerate(audio_data_chunks):
