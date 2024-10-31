@@ -84,6 +84,7 @@ class DOA_2D_listener():
             # data, 각 2byte
             volume=audioop.rms(data,2)
             if(volume>self.MIN_VOLUME):
+                print('loud sound detected')
                 angle=self.Mic_tuning.direction
                 if i>int(frame_len*self.SOUND_PRE_OFFSET):
                     test_frames[:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[i-int(frame_len*self.SOUND_PRE_OFFSET):i]
@@ -95,6 +96,7 @@ class DOA_2D_listener():
                     test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 print('record done, start callback function')
                 self.DETECT_CALLBACK(test_frames, angle)
+                i=0
             i = i+1
             if(i>=frame_len):
                 i=0
