@@ -6,6 +6,7 @@ import time
 import sys
 
 sys.path.append('/home/rasp/venv/')
+sys.path.append('/home/rasp/venv/gist-aiot/')
 
 from usb_4_mic_array.tuning import Tuning
 import usb.core
