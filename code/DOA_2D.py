@@ -98,6 +98,7 @@ print(np.array(test_frames).shape)
 #실수화(librosa는 실수값으로 작동)
 #0번채널만 추출
 test_frames_np_float = soundDataToFloat(np.array(test_frames)[:,:,0])
+print(test_frames_np_float.shape)
 
 #모델에 넣기위한 작업과정s
 feat = mfcc.pre_progressing(test_frames_np_float, RATE)
