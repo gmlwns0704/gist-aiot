@@ -8,7 +8,7 @@ fs, audio_data = read('output_selected_channels.wav')
 # FFT 길이 설정
 nfft = 256
 
-chunk_size=1024
+chunk_size=4096
 
 # 주파수 분해능 계산
 # frequency_resolution = fs / nfft
