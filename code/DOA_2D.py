@@ -91,7 +91,8 @@ stream.close()
 p.terminate()
 
 #실수화(librosa는 실수값으로 작동)
-test_frames_np_int = np.array(test_frames, dtype=np.int16).T
+test_frames_np_int = np.array(test_frames[:,0], dtype=np.int16).T
+print(test_frames_np_int)
 # 2. float32로 변환하고 -1.0 ~ 1.0 범위로 정규화
 test_frames_np_float = test_frames_np_int.astype(np.float32) / 32768.0
 
