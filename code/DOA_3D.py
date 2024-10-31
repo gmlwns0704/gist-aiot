@@ -34,5 +34,7 @@ for chunk in audio_data_chunks:
 azimuths = doa.azimuth_recon
 
 # 결과 출력
-print(f"Estimated DOA angles: {np.degrees(azimuths)} degrees")
-
+if azimuths:
+    print(f"Estimated DOA angles: {np.degrees(azimuths)} degrees")
+else:
+    print('doa.azimuth_recon is None')
