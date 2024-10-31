@@ -90,6 +90,8 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
+print(test_frames.shape)
+
 #실수화(librosa는 실수값으로 작동)
 test_frames_np_int = np.array(test_frames[:][0], dtype=np.int16).T
 print(test_frames_np_int)
