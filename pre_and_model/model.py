@@ -93,21 +93,23 @@ class Rasp_Model():
         # # Loss and Optimizer
         # self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         # self.criterion = nn.CrossEntropyLoss()
-        return
-    
-    def test(self, input):
-        self.model.eval()
-        return self.model(input)
-    
-    def test_from_image(self):
-        img = Image.open('./sample.jpg').convert('L')
-        print('image load done')
-        transform = transforms.Compose([
+        # 모델 맞춤형 트랜스포머
+        self.transform = transforms.Compose([
             transforms.Resize((32, 32)),          # 모델에 맞는 크기로 조정
             transforms.Grayscale(num_output_channels=3),  # 3채널로 변환
             transforms.ToTensor()
         ])
+        return
+    
+    def test_by_feat(self, input):
+        self.model.eval()
+        input_tensor = self.transform(input).unsqueeze(0)  
+        return self.model(input_tensor)
+    
+    def test_from_image(self):
+        img = Image.open('./sample.jpg').convert('L')
+        print('image load done')
         # 이미지를 텐서로 변환
-        input_tensor = transform(img).unsqueeze(0)  
+        input_tensor = self.transform(img).unsqueeze(0)  
         print('transform done')
         return self.test(input_tensor)

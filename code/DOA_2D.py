@@ -11,6 +11,9 @@ from usb_4_mic_array.tuning import Tuning
 import usb.core
 import usb.util
 
+import pre_and_model.mfcc as mfcc
+import pre_and_model.model as model
+
 # 설정
 FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
@@ -23,6 +26,9 @@ SOUND_OFFSET_RATE=0.3
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
+
+# 모델객체 생성
+rasp_model = model.Rasp_Model()
 
 # resepeaker찾기
 dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
@@ -87,16 +93,6 @@ audio_data = np.vstack(test_frames)
 # n채널에서 데이터 가져오기: audio_data[:,n]
 
 #모델에 넣기위한 작업과정
-
-# 각 채널별로 WAV 파일로 저장
-for channel in range(CHANNELS):
-    channel_data = audio_data[:, channel]
-    wave_output_filename = WAVE_OUTPUT_FILENAME_TEMPLATE.format(channel + 1)
-    
-    with wave.open(wave_output_filename, 'wb') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(p.get_sample_size(FORMAT))
-        wf.setframerate(RATE)
-        wf.writeframes(channel_data.tobytes())
-    
-    print("* 데이터를 저장했습니다:", wave_output_filename)
+feat = mfcc.pre_progressing(np.array(test_frames), RATE)
+result = rasp_model.test_by_feat(feat)
+print(result)
