@@ -101,9 +101,10 @@ class Rasp_Model():
         ])
         return
     
-    def test_by_feat(self, input):
-        self.model.eval()  
-        return self.model(input)
+    def test_by_feat(self, img):
+        self.model.eval()
+        input_tensor = self.img_transform(img).unsqueeze(0)
+        return self.model(input_tensor)
     
     def test_from_image(self):
         img = Image.open('./sample.jpg').convert('L')

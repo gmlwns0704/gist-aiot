@@ -34,5 +34,9 @@ def pre_progressing(y, sr, size=[32,32]):
     # 패딩된 ndarray
     print('mfcc done')
     feat = padding(feat, 500)
+    img = Image.fromarray(feat)
+    img = img.convert('L')
+    # resize크기 적당히 조절
+    img = img.resize(size)
 
-    return feat
+    return img
