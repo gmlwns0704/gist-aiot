@@ -8,6 +8,8 @@ fs, audio_data = read('output_selected_channels.wav')
 # FFT 길이 설정
 nfft = 256
 
+chunk_size=1024
+
 # 주파수 분해능 계산
 # frequency_resolution = fs / nfft
 # print(f"주파수 분해능: {frequency_resolution} Hz")
@@ -21,24 +23,30 @@ mic_positions = np.array([
     [1, -1, 0]
 ]).T  # (3, M) 형식으로 변환
 
+# 청크 단위로 오디오 데이터를 분할
+audio_data_chunks = [audio_data[i:i+chunk_size, :] for i in range(0, audio_data.shape[0], chunk_size)]
+print(f"총 청크 수: {len(audio_data_chunks)}")
+
 # MUSIC 알고리즘을 사용하여 DOA 추정
 doa = pra.doa.music.MUSIC(mic_positions, fs, nfft=nfft, c=343)
-chunk_size=1024
-audio_data_chunks = [audio_data[i:i+chunk_size, :] for i in range(0, audio_data.shape[0], chunk_size)]
 
-M=4
-F=int(nfft/2)+1
-S=len(audio_data_chunks)
-print(M*F*S)
+# S 값을 설정 (총 청크 수에서 적절한 값으로 설정)
+S = min(len(audio_data_chunks), 100)
+print(f"사용할 스냅샷 수(S): {S}")
 
-# 분할된 청크 확인
+# 분할된 청크 확인 및 DOA 추정
 for i, chunk in enumerate(audio_data_chunks):
     print(f"Chunk {i+1}: shape {chunk.shape}")
-    doa.locate_sources(chunk.T)
-    azimuths = doa.azimuth_recon
-    # doa.azimuth_recon contains the reconstructed location of the source
-    print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")
-# 음원 방향 추정 (데이터를 FFT 길이에 맞춰 분할)
-# audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
-# print(audio_data_chunks)
-# print(len(audio_data_chunks))
+    if chunk.shape[0] < nfft:
+        continue  # 청크의 크기가 FFT 길이보다 작은 경우 건너뜀
+    stft_frames = pra.transform.stft.analysis(chunk.T, nfft, nfft // 2).T
+    X = stft_frames[:, :S]  # 스냅샷 수 만큼만 선택
+    doa.locate_sources(X)
+    azimuths = doa.grid.azimuth
+    max_indices = np.argmax(doa.pseudo_spectrum, axis=0)  # 가장 큰 스펙트럼 인덱스
+
+    if azimuths is not None:
+        estimated_angles = np.degrees(azimuths[max_indices])
+        print(f"Estimated DOA angles: {estimated_angles} degrees")
+    else:
+        print("DOA estimation failed.")
