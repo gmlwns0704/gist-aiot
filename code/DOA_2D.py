@@ -89,11 +89,12 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-# 데이터 배열을 결합
-audio_data = np.vstack(test_frames)
-# n채널에서 데이터 가져오기: audio_data[:,n]
+#실수화(librosa는 실수값으로 작동)
+test_frames = np.array(test_frames, dtype=np.int16)
+# 2. float32로 변환하고 -1.0 ~ 1.0 범위로 정규화
+test_frames = test_frames.astype(np.float32) / 32768.0
 
 #모델에 넣기위한 작업과정
-feat = mfcc.pre_progressing(np.array(test_frames), RATE)
+feat = mfcc.pre_progressing(test_frames, RATE)
 result = rasp_model.test_by_feat(feat)
 print(result)
