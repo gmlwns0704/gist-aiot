@@ -86,12 +86,13 @@ class DOA_2D_listener():
             if(volume>self.MIN_VOLUME):
                 print('loud sound detected')
                 self.angle=self.Mic_tuning.direction
-                if i>int(frame_len*self.SOUND_PRE_OFFSET):
-                    self.test_frames[:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[i-int(frame_len*self.SOUND_PRE_OFFSET):i]
+                x=int(frame_len*self.SOUND_PRE_OFFSET)
+                if i>x:
+                    self.test_frames[:x]=frames[i-x:i]
                 else:
-                    self.test_frames[:i]=frames[:i]
-                    self.test_frames[i:int(frame_len*self.SOUND_PRE_OFFSET)]=frames[int(frame_len*self.SOUND_PRE_OFFSET)+i:]
-                for j in range(int(frame_len*self.SOUND_PRE_OFFSET),frame_len):
+                    self.test_frames[:x-i]=frames[frame_len-(x-i):]
+                    self.test_frames[x-i:x]=frames[:i]
+                for j in range(x,frame_len):
                     data=self.STREAM.read(self.CHUNK, exception_on_overflow=False)
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 if self.Mic_tuning.is_voice():
