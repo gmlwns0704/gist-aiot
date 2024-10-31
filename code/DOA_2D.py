@@ -46,7 +46,7 @@ class DOA_2D_listener():
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
         
         # 모델 객체 생성
-        if model is None:
+        if input_model is None:
             self.MODEL = model.Rasp_Model()
         else:
             self.MODEL = input_model
