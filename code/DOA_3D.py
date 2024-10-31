@@ -25,7 +25,6 @@ doa = pra.doa.music.MUSIC(mic_positions, fs, nfft, c=343)
 
 # 음원 방향 추정 (데이터를 FFT 길이에 맞춰 분할)
 audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
-print(audio_data_chunks.shape)
 print(audio_data_chunks)
 for chunk in audio_data_chunks:
     if chunk.shape[1] != nfft:
