@@ -24,15 +24,11 @@ mic_positions = np.array([
 doa = pra.doa.music.MUSIC(mic_positions, fs, nfft, c=343)
 
 # 음원 방향 추정 (데이터를 FFT 길이에 맞춰 분할)
-audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
-print(audio_data_chunks)
-print(len(audio_data_chunks))
-for chunk in audio_data_chunks:
-    print(chunk)
-    if chunk.shape[1] != nfft:
-        continue  # 마지막 청크는 nfft와 다를 수 있음
-    doa.locate_sources(chunk)
-    # 추정된 방향 (azimuth angles in degrees)
-    azimuths = doa.azimuth_recon
-    # doa.azimuth_recon contains the reconstructed location of the source
-    print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")
+# audio_data_chunks = [audio_data[:, i:i+nfft] for i in range(0, audio_data.shape[1], nfft)]
+# print(audio_data_chunks)
+# print(len(audio_data_chunks))
+
+doa.locate_sources(audio_data)
+azimuths = doa.azimuth_recon
+# doa.azimuth_recon contains the reconstructed location of the source
+print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")
