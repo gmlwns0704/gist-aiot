@@ -61,6 +61,7 @@ for i in range(frame_len):
     test_frames.append(frames[i][:,0])
 
 print("* waiting for loud volume")
+print(np.array(frames).shape)
 i=0
 while True:
     data=stream.read(CHUNK)
