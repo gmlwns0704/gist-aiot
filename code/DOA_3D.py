@@ -29,12 +29,7 @@ for chunk in audio_data_chunks:
     if chunk.shape[1] != nfft:
         continue  # 마지막 청크는 nfft와 다를 수 있음
     doa.locate_sources(chunk)
-
-# 추정된 방향 (azimuth angles in degrees)
-azimuths = doa.azimuth_recon
-
-# 결과 출력
-if azimuths:
-    print(f"Estimated DOA angles: {np.degrees(azimuths)} degrees")
-else:
-    print('doa.azimuth_recon is None')
+    # 추정된 방향 (azimuth angles in degrees)
+    azimuths = doa.azimuth_recon
+    # doa.azimuth_recon contains the reconstructed location of the source
+    print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")

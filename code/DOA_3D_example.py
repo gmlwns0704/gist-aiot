@@ -67,25 +67,25 @@ print("============ Using anechoic: {} ==================")
 
 #######################
 # algorithms parameters
-SNR = 0.0  # signal-to-noise ratio
-c = 343.0  # speed of sound
+# SNR = 0.0  # signal-to-noise ratio
+# c = 343.0  # speed of sound
 fs = 16000  # sampling frequency
-nfft = 256  # FFT size
-freq_bins = np.arange(5, 60)  # FFT bins to use for estimation
+# nfft = 256  # FFT size
+# freq_bins = np.arange(5, 60)  # FFT bins to use for estimation
 
 # compute the noise variance
-sigma2 = 10 ** (-SNR / 10) / (4.0 * np.pi * distance) ** 2
+# sigma2 = 10 ** (-SNR / 10) / (4.0 * np.pi * distance) ** 2
 
-# Create an anechoic room
-if use_anechoic_class:
-    aroom = pra.AnechoicRoom(dim, fs=fs, sigma2_awgn=sigma2)
-else:
-    aroom = pra.ShoeBox(room_dim, fs=fs, max_order=0, sigma2_awgn=sigma2)
+# # Create an anechoic room
+# if use_anechoic_class:
+#     aroom = pra.AnechoicRoom(dim, fs=fs, sigma2_awgn=sigma2)
+# else:
+#     aroom = pra.ShoeBox(room_dim, fs=fs, max_order=0, sigma2_awgn=sigma2)
 
-# add the source
-source_location = room_dim / 2 + distance * np.r_[np.cos(azimuth), np.sin(azimuth)]
-source_signal = np.random.randn((nfft // 2 + 1) * nfft)
-aroom.add_source(source_location, signal=source_signal)
+# # add the source
+# source_location = room_dim / 2 + distance * np.r_[np.cos(azimuth), np.sin(azimuth)]
+# source_signal = np.random.randn((nfft // 2 + 1) * nfft)
+# aroom.add_source(source_location, signal=source_signal)
 
 # We use a circular array with radius 15 cm # and 12 microphones
 R = pra.circular_2D_array(room_dim / 2, 12, 0.0, 0.15)
