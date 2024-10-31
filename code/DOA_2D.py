@@ -29,7 +29,7 @@ class DOA_2D_listener():
                  min_volume=1500,
                  sound_pre_offset=0.3,
                  detect_callback=None,
-                 model=None):
+                 input_model=None):
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = channels
         self.RATE = sr
@@ -49,7 +49,7 @@ class DOA_2D_listener():
         if model is None:
             self.MODEL = model.Rasp_Model()
         else:
-            self.MODEL = model
+            self.MODEL = input_model
             
         # resepeaker찾기
         # DOAANGLE에 사용
