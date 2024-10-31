@@ -58,7 +58,7 @@ frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
 for i in range(frame_len):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
-    test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
+    test_frames.append(frames[i][:,0])
 
 print("* waiting for loud volume")
 i=0
@@ -73,21 +73,19 @@ while True:
         print('angle:'+str(angle))
         print('i:'+str(i)+'/'+str(frame_len))
         if i>int(frame_len*SOUND_OFFSET_RATE):
-            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i]
+            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i,0]
         else:
             test_frames[:i]=frames[:i]
-            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:]
+            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:,0]
         for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
             data=stream.read(CHUNK)
-            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)[:,0]
         break
     i = i+1
     if(i>=frame_len):
         i=0
 
 print("* recorded")
-print(len(test_frames))
-print()
 
 # 스트림 종료
 stream.stop_stream()
