@@ -16,6 +16,10 @@ import usb.util
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
 
+def soundDataToFloat(SD):
+    # Converts integer representation back into librosa-friendly floats, given a numpy array SD
+    return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
+
 # 설정
 FORMAT = pyaudio.paFloat32
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
@@ -51,7 +55,7 @@ print("* generating initial frames")
 frames = []
 test_frames=[]
 frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
-for _ in range(frame_len):
+for i in range(frame_len):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
     test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
@@ -82,15 +86,20 @@ while True:
         i=0
 
 print("* recorded")
+print(len(test_frames))
+print()
 
 # 스트림 종료
 stream.stop_stream()
 stream.close()
 p.terminate()
 
+print(np.array(test_frames).shape)
+
 #실수화(librosa는 실수값으로 작동)
-test_frames_np = np.array(test_frames[:][:][0], dtype=np.float32).flatten()
+test_frames_np_float = soundDataToFloat(np.array(test_frames))
+
 #모델에 넣기위한 작업과정
-feat = mfcc.pre_progressing(test_frames_np, RATE)
+feat = mfcc.pre_progressing(test_frames_np_float, RATE)
 result = rasp_model.test_by_feat(feat)
 print(result)
