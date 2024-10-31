@@ -42,7 +42,7 @@ for i, chunk in enumerate(audio_data_chunks):
     X = np.array(
         [
             pra.transform.stft.analysis(signal, nfft, nfft // 2).T
-            for signal in chunk
+            for signal in chunk.T
         ]
     )
     print(X.shape)
