@@ -58,7 +58,7 @@ frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
 for i in range(frame_len):
     data = stream.read(CHUNK)
     frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
-    test_frames.append(frames[i][:,0])
+    test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
 
 print("* waiting for loud volume")
 print(np.array(frames).shape)
@@ -74,13 +74,13 @@ while True:
         print('angle:'+str(angle))
         print('i:'+str(i)+'/'+str(frame_len))
         if i>int(frame_len*SOUND_OFFSET_RATE):
-            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i][:][0]
+            test_frames[:int(frame_len*SOUND_OFFSET_RATE)]=frames[i-int(frame_len*SOUND_OFFSET_RATE):i]
         else:
-            test_frames[:i]=frames[:i][:][0]
-            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:][:][0]
+            test_frames[:i]=frames[:i]
+            test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:]
         for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
             data=stream.read(CHUNK)
-            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)[:,0]
+            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
         break
     i = i+1
     if(i>=frame_len):
@@ -96,9 +96,10 @@ p.terminate()
 print(np.array(test_frames).shape)
 
 #실수화(librosa는 실수값으로 작동)
-test_frames_np_float = soundDataToFloat(np.array(test_frames))
+#0번채널만 추출
+test_frames_np_float = soundDataToFloat(np.array(test_frames)[:,:,0])
 
-#모델에 넣기위한 작업과정
+#모델에 넣기위한 작업과정s
 feat = mfcc.pre_progressing(test_frames_np_float, RATE)
 result = rasp_model.test_by_feat(feat)
 print(result)
