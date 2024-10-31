@@ -4,7 +4,7 @@ import numpy as np
 import wave
 import time
 
-from .usb_4_mic_array.tuning import Tuning
+from venv.usb_4_mic_array.tuning import Tuning
 import usb.core
 import usb.util
 
