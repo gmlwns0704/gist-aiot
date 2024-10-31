@@ -29,7 +29,7 @@ doa = pra.doa.music.MUSIC(mic_positions, fs, nfft, c=343)
 # print(audio_data_chunks)
 # print(len(audio_data_chunks))
 
-doa.locate_sources(audio_data)
+doa.locate_sources(audio_data.T)
 azimuths = doa.azimuth_recon
 # doa.azimuth_recon contains the reconstructed location of the source
 print("  Recovered azimuth:", doa.azimuth_recon / np.pi * 180.0, "degrees")
