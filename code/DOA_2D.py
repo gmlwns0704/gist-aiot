@@ -111,7 +111,7 @@ class DOA_2D_listener():
                     if th is self.CALLBACK_THREAD_LIST[-1]:
                         print('thread is full, ignore')
             # i++
-            i = i+1%frame_len
+            i = (i+1)%frame_len
     
     def default_callback(self):
         #실수화(librosa는 실수값으로 작동)
