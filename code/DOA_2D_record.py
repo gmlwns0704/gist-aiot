@@ -23,7 +23,8 @@ RATE = 16000  # 샘플 레이트
 CHUNK = 1024  # 버퍼 크기
 RECORD_SECONDS = 5  # 녹음 시간 (초)
 WAVE_OUTPUT_FILENAME_TEMPLATE = "output_channel_{}.wav"
-MIN_VOLUME=int(input('MIN_VOLUME: '))
+SELECTED_CHANNELS_OUTPUT_FILENAME = "output_selected_channels.wav"
+MIN_VOLUME = int(input('MIN_VOLUME: '))
 SOUND_OFFSET_RATE=0.3
 
 # PyAudio 객체 생성
@@ -104,3 +105,12 @@ for channel in range(CHANNELS):
         wf.writeframes(channel_data.tobytes())
     
     print("* 데이터를 저장했습니다:", wave_output_filename)
+
+# 1-4번 채널을 통합하여 하나의 WAV 파일로 저장
+selected_channels_data = audio_data[:, 1:5]
+with wave.open(SELECTED_CHANNELS_OUTPUT_FILENAME, 'wb') as wf:
+    wf.setnchannels(4)  # 1-4번 채널을 통합하기 때문에 채널 수는 4
+    wf.setsampwidth(p.get_sample_size(FORMAT))
+    wf.setframerate(RATE)
+    wf.writeframes(selected_channels_data.tobytes())
+    print("* 1-4번 채널 데이터를 저장했습니다:", SELECTED_CHANNELS_OUTPUT_FILENAME)
