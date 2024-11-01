@@ -190,7 +190,7 @@ class DOA_TDOA_listener(DOA_2D_listener):
     def default_callback(self, input_test_frames):
         # 데시벨을 인식한 청크
         t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-        target_frames_np = np.array(input_test_frames[t-1:t+1])
+        target_frames_np = np.array(input_test_frames[t-1:t+2])
         # raw데이터 채널 갯수
         volume_timing=np.zeros(4)
         for ch in range(1,5):
