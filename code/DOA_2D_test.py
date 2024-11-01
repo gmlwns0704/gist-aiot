@@ -22,7 +22,7 @@ if input('choose type: ') == 'pra':
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
         min_volume=min_volume,
-        dim=2
+        dim=int(input('dim(2or3): '))
     )
 else:
     listener = DOA_2D.DOA_2D_listener(
