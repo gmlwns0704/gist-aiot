@@ -176,3 +176,26 @@ class DOA_pra_listener(DOA_2D_listener):
         self.doa.locate_sources(X)
         print(f"Estimated DOA angles: {self.doa.azimuth_recon / np.pi * 180.0} degrees")
         return
+
+class DOA_TDOA_listener(DOA_2D_listener):
+    def __init__(self, channels=6,
+                 sr=16000,
+                 chunk=1024,
+                 record_seconds=3,
+                 min_volume=1500,
+                 sound_pre_offset=0.3,
+                 input_model=None):
+        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
+    
+    def default_callback(self, input_test_frames):
+        # 데시벨을 인식한 청크
+        t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
+        target_frames_np = np.array(input_test_frames[t-1:t+1])
+        # raw데이터 채널 갯수
+        volume_timing=np.zeros(4)
+        for ch in range(1,5):
+            volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
+        print(volume_timing)
+        
+        
+        return

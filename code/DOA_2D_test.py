@@ -17,12 +17,19 @@ record_seconds=int(input('record seconds(int): '))
 sound_pre_offset=float(input('sound_pre_offset(float): '))
 min_volume=int(input('min_volume(int): '))
 
-if input('choose type: ') == 'pra':
+t = input('choose type: ')
+if t == 'pra':
     listener = DOA_2D.DOA_pra_listener(
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
         min_volume=min_volume,
         dim=int(input('dim(2or3): '))
+    )
+elif t == 'tdoa':
+    listener = DOA_2D.DOA_TDOA_listener(
+        record_seconds=record_seconds,
+        sound_pre_offset=sound_pre_offset,
+        min_volume=min_volume
     )
 else:
     listener = DOA_2D.DOA_2D_listener(
