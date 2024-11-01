@@ -13,32 +13,22 @@ import pyroomacoustics as pra
 #         print(self.angle)
 #         return
 
-def pyroom_callback(input_test_frames):
-    nfft=256
-    frame_shape=input_test_frames.shape
-    X = np.array(
-        [
-            pra.transform.stft.analysis(signal.T.flattn(), nfft, nfft // 2).T
-            for signal in input_test_frames.T
-        ]
-    )
-    return
-
 record_seconds=int(input('record seconds(int): ')),
 sound_pre_offset=float(input('sound_pre_offset(float): ')),
 min_volume=int(input('min_volume(int): '))
 
-listener = DOA_2D.DOA_2D_listener(
-    record_seconds=record_seconds,
-    sound_pre_offset=sound_pre_offset,
-    min_volume=min_volume
-)
+if input('choose type: ') is 'pra':
+    listener = DOA_2D.DOA_pra_listener(
+        record_seconds=record_seconds,
+        sound_pre_offset=sound_pre_offset,
+        min_volume=min_volume,
+        dim=2
+    )
+else:
+    listener = DOA_2D.DOA_2D_listener(
+        record_seconds=record_seconds,
+        sound_pre_offset=sound_pre_offset,
+        min_volume=min_volume
+    )
 
 listener.start_detect()
-
-
-listener_pyroom = DOA_2D.DOA_2D_listener(
-    record_seconds=record_seconds,
-    sound_pre_offset=sound_pre_offset,
-    min_volume=min_volume,
-)

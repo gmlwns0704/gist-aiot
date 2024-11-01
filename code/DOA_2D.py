@@ -7,6 +7,8 @@ import sys
 import torch
 import threading
 
+import pyroomacoustics as pra
+
 sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
 
@@ -29,7 +31,6 @@ class DOA_2D_listener():
                  record_seconds=3,
                  min_volume=1500,
                  sound_pre_offset=0.3,
-                 detect_callback=None,
                  input_model=None):
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = channels
@@ -38,10 +39,6 @@ class DOA_2D_listener():
         self.RECORD_SECONDS = record_seconds
         self.MIN_VOLUME=min_volume
         self.SOUND_PRE_OFFSET=sound_pre_offset
-        if detect_callback is None:
-            self.DETECT_CALLBACK=self.default_callback
-        else:
-            self.DETECT_CALLBACK=detect_callback
             
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -97,7 +94,7 @@ class DOA_2D_listener():
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
-                th=threading.Thread(target=self.DETECT_CALLBACK, args=(self.test_frames,))
+                th=threading.Thread(target=self.default_callback, args=(self.test_frames,))
                 th.start()
                 print('thread call done')
             # i++
@@ -119,3 +116,52 @@ class DOA_2D_listener():
         self.STREAM.stop_stream()
         self.STREAM.close()
         self.PYAUDIO_INSTANCE.terminate()
+
+
+class DOA_pra_listener(DOA_2D_listener):
+    def __init__(self,
+                 channels=6,
+                 sr=16000,
+                 chunk=1024,
+                 record_seconds=3,
+                 min_volume=1500,
+                 sound_pre_offset=0.3,
+                 detect_callback=None,
+                 input_model=None,
+                 nfft=256,
+                 mic_positions=None,
+                 dim=2):
+        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, detect_callback, input_model)
+        self.nfft=nfft
+        self.doa=pra.doa.music.MUSIC(mic_positions, self.RATE, nfft=nfft, c=343, dim=dim)
+        
+        if mic_positions is None:
+            if dim == 2:
+                self.mic_positions = np.array([
+                    [1, 1],
+                    [-1, 1],
+                    [-1, -1],
+                    [1, -1]
+                ]).T
+            elif dim == 3:
+                self.mic_positions = np.array([
+                    [1, 1, 0],
+                    [-1, 1, 0],
+                    [-1, -1, 0],
+                    [1, -1, 0]
+                ]).T
+            else:
+                print('wrong dim!')
+    
+    def default_callback(self, input_test_frames):
+        self.nfft=256
+        frame_shape=input_test_frames.shape
+        X = np.array(
+            [
+                pra.transform.stft.analysis(signal.T.flattn(), self.nfft, self.nfft // 2).T
+                for signal in input_test_frames.T
+            ]
+        )
+        self.doa.locate_sources(X)
+        print(f"Estimated DOA angles: {self.doa.azimuth_recon / np.pi * 180.0} degrees")
+        return
