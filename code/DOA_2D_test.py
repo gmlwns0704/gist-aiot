@@ -16,6 +16,7 @@ import pyroomacoustics as pra
 record_seconds=int(input('record seconds(int): '))
 sound_pre_offset=float(input('sound_pre_offset(float): '))
 min_volume=int(input('min_volume(int): '))
+rate=int(input('sampling rate: '))
 
 t = input('choose type: ')
 if t == 'pra':
@@ -23,19 +24,22 @@ if t == 'pra':
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
         min_volume=min_volume,
-        dim=int(input('dim(2or3): '))
+        dim=int(input('dim(2or3): ')),
+        sr=rate
     )
 elif t == 'tdoa':
     listener = DOA_2D.DOA_TDOA_listener(
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
-        min_volume=min_volume
+        min_volume=min_volume,
+        sr=rate
     )
 else:
     listener = DOA_2D.DOA_2D_listener(
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
-        min_volume=min_volume
+        min_volume=min_volume,
+        sr=rate
     )
 
 listener.start_detect()
