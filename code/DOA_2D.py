@@ -132,7 +132,6 @@ class DOA_pra_listener(DOA_2D_listener):
                  dim=2):
         super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
         self.nfft=nfft
-        self.doa=pra.doa.music.MUSIC(mic_positions, self.RATE, nfft=nfft, c=343, dim=dim)
         
         if mic_positions is None:
             if dim == 2:
@@ -151,6 +150,8 @@ class DOA_pra_listener(DOA_2D_listener):
                 ]).T
             else:
                 print('wrong dim!')
+        
+        self.doa=pra.doa.music.MUSIC(mic_positions, self.RATE, nfft=nfft, c=343, dim=dim)
     
     def default_callback(self, input_test_frames):
         self.nfft=256
