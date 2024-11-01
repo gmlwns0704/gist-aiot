@@ -164,15 +164,17 @@ class DOA_pra_listener(DOA_2D_listener):
             else:
                 print('wrong dim!')
         #https://github.com/LCAV/pyroomacoustics/issues/166 버그를 고치기 위해 직접 설정?
-        # num_points = 360  # azimuth에 대한 점의 개수
-        # azimuth = np.linspace(-np.pi, np.pi, num_points)  # -180도에서 180도까지
-        # colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
+        num_points = 360  # azimuth에 대한 점의 개수
+        azimuth = np.linspace(0, 2*np.pi, num_points)  # -180도에서 180도까지
+        colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
         
         self.doa=pra.doa.music.MUSIC(self.mic_positions,
                                      self.RATE,
                                      nfft=self.nfft,
                                      c=343,
-                                     dim=dim)
+                                     dim=dim,
+                                     azimuth=azimuth,
+                                     colatitude=colatitude)
     
     def default_callback(self, input_test_frames):
         test_frames_np=np.array(input_test_frames)[:,:,1:5]
