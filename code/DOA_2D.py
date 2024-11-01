@@ -67,7 +67,7 @@ class DOA_2D_listener():
     def start_detect(self):
         frames = []
         self.test_frames=[]
-        frame_len=(int(self.RATE / self.CHUNK * self.RECORD_SECONDS))
+        frame_len=int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         for i in range(frame_len):
             data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
             frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS))
