@@ -51,7 +51,7 @@ print(f"사용할 스냅샷 수(S): {S}")
 X = np.array(
     [
         pra.transform.stft.analysis(signal, nfft, nfft // 2).T
-        for signal in audio_data_chunks.T
+        for signal in audio_data_chunks
     ]
 )
 
