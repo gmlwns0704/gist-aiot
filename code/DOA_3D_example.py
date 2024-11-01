@@ -89,6 +89,7 @@ aroom.add_source(source_location, signal=source_signal)
 
 # We use a circular array with radius 15 cm # and 12 microphones
 R = pra.circular_2D_array(room_dim / 2, 12, 0.0, 0.15)
+print(R)
 R = np.array([
                     [1, 1],
                     [-1, 1],
