@@ -13,8 +13,8 @@ import pyroomacoustics as pra
 #         print(self.angle)
 #         return
 
-record_seconds=int(input('record seconds(int): ')),
-sound_pre_offset=float(input('sound_pre_offset(float): ')),
+record_seconds=int(input('record seconds(int): '))
+sound_pre_offset=float(input('sound_pre_offset(float): '))
 min_volume=int(input('min_volume(int): '))
 
 if input('choose type: ') == 'pra':
