@@ -165,7 +165,6 @@ class DOA_pra_listener(DOA_2D_listener):
         self.doa=pra.doa.music.MUSIC(self.mic_positions, self.RATE, nfft=self.nfft, c=343, dim=dim)
     
     def default_callback(self, input_test_frames):
-        nr_frames=nr.reduce_noise(y=input_test_frames, sr=self.RATE)
         test_frames_np=np.array(input_test_frames)[:,:,1:5]
         print(test_frames_np.shape)
         X = np.array(
