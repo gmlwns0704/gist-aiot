@@ -35,21 +35,24 @@ S = min(len(audio_data_chunks), 100)
 print(f"사용할 스냅샷 수(S): {S}")
 
 # 분할된 청크 확인 및 DOA 추정
-for i, chunk in enumerate(audio_data_chunks):
-    print(f"Chunk {i+1}: shape {chunk.shape}")
-    if chunk.shape[0] < nfft:
-        continue  # 청크의 크기가 FFT 길이보다 작은 경우 건너뜀
-    X = np.array(
-        [
-            pra.transform.stft.analysis(signal, nfft, nfft // 2).T
-            for signal in chunk.T
-        ]
-    )
-    print(X.shape)
-    doa.locate_sources(X)
-    azimuth = doa.azimuth_recon
+# for i, chunk in enumerate(audio_data_chunks):
+#     print(f"Chunk {i+1}: shape {chunk.shape}")
+#     if chunk.shape[0] < nfft:
+#         continue  # 청크의 크기가 FFT 길이보다 작은 경우 건너뜀
+#     X = np.array(
+#         [
+#             pra.transform.stft.analysis(signal, nfft, nfft // 2).T
+#             for signal in chunk.T
+#         ]
+#     )
+#     print(X.shape)
+#     doa.locate_sources(X)
 
-    if azimuth is not None:
-        print(f"Estimated DOA angles: {azimuth*np.pi/180} degrees")
-    else:
-        print("DOA estimation failed.")
+X = np.array(
+    [
+        pra.transform.stft.analysis(signal, nfft, nfft // 2).T
+        for signal in audio_data_chunks.T
+    ]
+)
+
+print(f"Estimated DOA angles: {doa.azimuth_recon / np.pi * 180.0} degrees")
