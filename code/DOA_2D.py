@@ -170,7 +170,7 @@ class DOA_pra_listener(DOA_2D_listener):
         X = np.array(
             [
                 pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-                for ch in test_frames_np.shape[2]
+                for ch in range(test_frames_np.shape[2])
             ]
         )
         self.doa.locate_sources(X)
