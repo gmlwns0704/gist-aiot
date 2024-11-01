@@ -154,10 +154,10 @@ class DOA_pra_listener(DOA_2D_listener):
                 ]).T
             elif dim == 3:
                 self.mic_positions = np.array([
-                    [1, 1, 0],
-                    [-1, 1, 0],
-                    [-1, -1, 0],
-                    [1, -1, 0]
+                    [0, 0.035],
+                    [-0.035, 0],
+                    [0, -0.035],
+                    [0.035, 0]
                 ]).T
             else:
                 print('wrong dim!')
@@ -175,7 +175,7 @@ class DOA_pra_listener(DOA_2D_listener):
         )
         self.doa.locate_sources(X)
         print(f"Estimated DOA angles: {self.doa.azimuth_recon / np.pi * 180.0} degrees")
-        return
+        return super().default_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
     def __init__(self, channels=6,
@@ -196,6 +196,4 @@ class DOA_TDOA_listener(DOA_2D_listener):
         for ch in range(1,5):
             volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
         print(volume_timing)
-        
-        
-        return
+        return super().default_callback(input_test_frames)
