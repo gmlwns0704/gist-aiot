@@ -166,7 +166,7 @@ class DOA_pra_listener(DOA_2D_listener):
         test_frames_np=np.array(input_test_frames)
         X = np.array(
             [
-                pra.transform.stft.analysis(signal.T.flattn(), self.nfft, self.nfft // 2).T
+                pra.transform.stft.analysis(signal.T.flatten(), self.nfft, self.nfft // 2).T
                 for signal in test_frames_np.T
             ]
         )
