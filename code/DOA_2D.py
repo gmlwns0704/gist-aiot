@@ -154,10 +154,10 @@ class DOA_pra_listener(DOA_2D_listener):
                 ]).T
             elif dim == 3:
                 self.mic_positions = np.array([
-                    [0, 0.035],
-                    [-0.035, 0],
-                    [0, -0.035],
-                    [0.035, 0]
+                    [0, 0.035, 0],
+                    [-0.035, 0, 0],
+                    [0, -0.035, 0],
+                    [0.035, 0, 0]
                 ]).T
             else:
                 print('wrong dim!')
