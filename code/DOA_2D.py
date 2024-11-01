@@ -126,12 +126,11 @@ class DOA_pra_listener(DOA_2D_listener):
                  record_seconds=3,
                  min_volume=1500,
                  sound_pre_offset=0.3,
-                 detect_callback=None,
                  input_model=None,
                  nfft=256,
                  mic_positions=None,
                  dim=2):
-        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, detect_callback, input_model)
+        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
         self.nfft=nfft
         self.doa=pra.doa.music.MUSIC(mic_positions, self.RATE, nfft=nfft, c=343, dim=dim)
         
