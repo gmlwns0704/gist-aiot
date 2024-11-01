@@ -164,6 +164,7 @@ class DOA_pra_listener(DOA_2D_listener):
     
     def default_callback(self, input_test_frames):
         test_frames_np=np.array(input_test_frames)
+        print(test_frames_np.shape)
         X = np.array(
             [
                 pra.transform.stft.analysis(signal.T.flatten(), self.nfft, self.nfft // 2).T
