@@ -67,6 +67,9 @@ class DOA_2D_listener():
     def start_detect(self):
         frames = []
         self.test_frames=[]
+        print(self.RATE)
+        print(self.CHUNK)
+        print(self.RECORD_SECONDS)
         frame_len=int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         for i in range(frame_len):
             data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
@@ -130,7 +133,13 @@ class DOA_pra_listener(DOA_2D_listener):
                  nfft=256,
                  mic_positions=None,
                  dim=2):
-        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
+        super().__init__(channels=channels,
+                         sr=sr,
+                         chunk=chunk,
+                         record_seconds=record_seconds,
+                         min_volume=min_volume,
+                         sound_pre_offset=sound_pre_offset,
+                         input_model=input_model)
         self.nfft=nfft
         
         if mic_positions is None:
