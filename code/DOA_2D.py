@@ -143,7 +143,9 @@ class DOA_pra_listener(DOA_2D_listener):
                          sound_pre_offset=sound_pre_offset,
                          input_model=input_model)
         self.nfft=nfft
+        self.dim=dim
         
+        # 1=1m, respeaker직경은 70mm=0.07m
         if mic_positions is None:
             if dim == 2:
                 self.mic_positions = np.array([
@@ -161,8 +163,18 @@ class DOA_pra_listener(DOA_2D_listener):
                 ]).T
             else:
                 print('wrong dim!')
+        #https://github.com/LCAV/pyroomacoustics/issues/166 버그를 고치기 위해 직접 설정?
+        num_points = 360  # azimuth에 대한 점의 개수
+        azimuth = np.linspace(-np.pi, np.pi, num_points)  # -180도에서 180도까지
+        colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
         
-        self.doa=pra.doa.music.MUSIC(self.mic_positions, self.RATE, nfft=self.nfft, c=343, dim=dim)
+        self.doa=pra.doa.music.MUSIC(self.mic_positions,
+                                     self.RATE,
+                                     nfft=self.nfft,
+                                     c=343,
+                                     dim=dim,
+                                     azimuth=azimuth,
+                                     colatitude=colatitude)
     
     def default_callback(self, input_test_frames):
         test_frames_np=np.array(input_test_frames)[:,:,1:5]
@@ -175,6 +187,8 @@ class DOA_pra_listener(DOA_2D_listener):
         )
         self.doa.locate_sources(X)
         print(f"Estimated DOA angles: {self.doa.azimuth_recon / np.pi * 180.0} degrees")
+        if self.dim == 3:
+            print(f"Estimated DOA elev angles: {self.doa.colatitude_recon / np.pi * 180.0} degrees")
         return super().default_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
