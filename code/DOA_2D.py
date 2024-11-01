@@ -167,6 +167,12 @@ class DOA_pra_listener(DOA_2D_listener):
     def default_callback(self, input_test_frames):
         test_frames_np=np.array(input_test_frames)[:,:,1:5]
         print(test_frames_np.shape)
+        
+        #채널병합, 노이즈제거, 채널 재분리
+        flattened_data = test_frames_np.reshape(-1, test_frames_np.shape[2])  # (47104, 4) 형태로 변환
+        reduced_noise_flattened = np.array([nr.reduce_noise(y=flattened_data[:, ch], sr=44100) for ch in range(flattened_data.shape[1])]).T
+        test_frames_np = reduced_noise_flattened.reshape(46, 1024, 4)
+        
         X = np.array(
             [
                 pra.transform.stft.analysis(signal.T.flatten(), self.nfft, self.nfft // 2).T
