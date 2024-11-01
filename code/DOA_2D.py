@@ -98,11 +98,9 @@ class DOA_2D_listener():
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
-                # rawdata 노이즈 제거
-                for ch in range(1,5):
-                    self.test_frames[:][:][ch]=nr.reduce_noise(y=self.test_frames[:][:][ch], sr=self.RATE)
-                th=threading.Thread(target=self.default_callback, args=(self.test_frames,))
-                th.start()
+                # th=threading.Thread(target=self.default_callback, args=(self.test_frames,))
+                # th.start()
+                self.default_callback(self.test_frames)
                 print('thread call done')
             # i++
             i = (i+1)%frame_len
@@ -167,12 +165,12 @@ class DOA_pra_listener(DOA_2D_listener):
         self.doa=pra.doa.music.MUSIC(self.mic_positions, self.RATE, nfft=self.nfft, c=343, dim=dim)
     
     def default_callback(self, input_test_frames):
-        test_frames_np=np.array(input_test_frames)
+        test_frames_np=nr.reduce_noise(y=np.array(input_test_frames)[:,:,1:5], sr=self.RATE)
         print(test_frames_np.shape)
         X = np.array(
             [
                 pra.transform.stft.analysis(signal.T.flatten(), self.nfft, self.nfft // 2).T
-                for signal in test_frames_np.T[1:5]
+                for signal in test_frames_np.T
             ]
         )
         self.doa.locate_sources(X)
