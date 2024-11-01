@@ -96,6 +96,7 @@ aroom.simulate()
 
 ################################
 # Compute the STFT frames needed
+#각 채널별로 분석
 X = np.array(
     [
         pra.transform.stft.analysis(signal, nfft, nfft // 2).T

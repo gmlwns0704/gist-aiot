@@ -51,8 +51,11 @@ print(f"사용할 스냅샷 수(S): {S}")
 X = np.array(
     [
         pra.transform.stft.analysis(signal, nfft, nfft // 2).T
-        for signal in audio_data_chunks
+        for signal in audio_data
     ]
 )
+
+print(X.shape)
+doa.locate_sources(X)
 
 print(f"Estimated DOA angles: {doa.azimuth_recon / np.pi * 180.0} degrees")
