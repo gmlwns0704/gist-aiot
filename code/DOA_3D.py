@@ -17,9 +17,9 @@ print(audio_data.shape)
 
 # 마이크 배열 설정 (주어진 좌표 사용)
 mic_positions = np.array([
-    [-1, -1],
     [1, 1],
     [-1, 1],
+    [-1, -1],
     [1, -1]
 ]).T  # (3, M) 형식으로 변환
 
