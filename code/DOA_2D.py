@@ -8,6 +8,7 @@ import torch
 import threading
 
 import pyroomacoustics as pra
+import noisereduce as nr
 
 sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
@@ -97,6 +98,9 @@ class DOA_2D_listener():
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
+                # rawdata 노이즈 제거
+                for ch in range(1,5):
+                    self.test_frames[:][:,ch]=nr.reduce_noise(y=self.test_frames[:][:,ch], sr=self.RATE)
                 th=threading.Thread(target=self.default_callback, args=(self.test_frames,))
                 th.start()
                 print('thread call done')
