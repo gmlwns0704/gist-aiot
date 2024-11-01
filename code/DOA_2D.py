@@ -163,12 +163,11 @@ class DOA_pra_listener(DOA_2D_listener):
         self.doa=pra.doa.music.MUSIC(self.mic_positions, self.RATE, nfft=self.nfft, c=343, dim=dim)
     
     def default_callback(self, input_test_frames):
-        self.nfft=256
-        frame_shape=input_test_frames.shape
+        test_frames_np=np.array(input_test_frames)
         X = np.array(
             [
                 pra.transform.stft.analysis(signal.T.flattn(), self.nfft, self.nfft // 2).T
-                for signal in input_test_frames.T
+                for signal in test_frames_np.T
             ]
         )
         self.doa.locate_sources(X)
