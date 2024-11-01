@@ -23,16 +23,16 @@ mic_positions = np.array([
     [1, -1]
 ]).T  # (3, M) 형식으로 변환
 
-# 청크 단위로 오디오 데이터를 분할
-audio_data_chunks = [audio_data[i:i+chunk_size, :] for i in range(0, audio_data.shape[0], chunk_size)]
-print(f"총 청크 수: {len(audio_data_chunks)}")
+# # 청크 단위로 오디오 데이터를 분할
+# audio_data_chunks = [audio_data[i:i+chunk_size, :] for i in range(0, audio_data.shape[0], chunk_size)]
+# print(f"총 청크 수: {len(audio_data_chunks)}")
 
 # MUSIC 알고리즘을 사용하여 DOA 추정
 doa = pra.doa.music.MUSIC(mic_positions, fs, nfft=nfft, c=343, dim=2)
 
 # S 값을 설정 (총 청크 수에서 적절한 값으로 설정)
-S = min(len(audio_data_chunks), 100)
-print(f"사용할 스냅샷 수(S): {S}")
+# S = min(len(audio_data_chunks), 100)
+# print(f"사용할 스냅샷 수(S): {S}")
 
 # 분할된 청크 확인 및 DOA 추정
 # for i, chunk in enumerate(audio_data_chunks):

@@ -97,16 +97,16 @@ class DOA_2D_listener():
                     self.test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, self.CHANNELS)
                 # 다른 스레드에서 분석시작
                 print('record done, start callback function')
-                th=threading.Thread(target=self.DETECT_CALLBACK)
+                th=threading.Thread(target=self.DETECT_CALLBACK, args=(self.test_frames,))
                 th.start()
                 print('thread call done')
             # i++
             i = (i+1)%frame_len
     
-    def default_callback(self):
+    def default_callback(self, input_test_frames):
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
-        test_frames_np_float = soundDataToFloat(np.array(self.test_frames)[:,:,0]).flatten()
+        test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
         #모델에 넣기위한 작업과정
         feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
         result = self.MODEL.test_by_feat(feat)
