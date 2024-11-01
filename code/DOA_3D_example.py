@@ -91,10 +91,10 @@ aroom.add_source(source_location, signal=source_signal)
 R = pra.circular_2D_array(room_dim / 2, 12, 0.0, 0.15)
 print(R)
 R = np.array([
-                    [1, 1],
-                    [-1, 1],
-                    [-1, -1],
-                    [1, -1]
+                    [0, 0.035],
+                    [-0.035, 0],
+                    [0, -0.035],
+                    [0.035, 0]
                 ]).T
 aroom.add_microphone_array(pra.MicrophoneArray(R, fs=aroom.fs))
 

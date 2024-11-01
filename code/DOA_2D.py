@@ -147,10 +147,10 @@ class DOA_pra_listener(DOA_2D_listener):
         if mic_positions is None:
             if dim == 2:
                 self.mic_positions = np.array([
-                    [1, 1],
-                    [-1, 1],
-                    [-1, -1],
-                    [1, -1]
+                    [0, 0.035],
+                    [-0.035, 0],
+                    [0, -0.035],
+                    [0.035, 0]
                 ]).T
             elif dim == 3:
                 self.mic_positions = np.array([
