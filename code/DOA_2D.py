@@ -63,7 +63,7 @@ class DOA_2D_listener():
             dev = self.PYAUDIO_INSTANCE.get_device_info_by_index(i)
             name = dev['name'].encode('utf-8')
             print('{}:{} with {} input channels'.format(i, name, dev['maxInputChannels']))
-            if name.find('ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.channels:
+            if name.find(b'ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.RESP_CHANNELS:
                 device_index = i
                 break
 
