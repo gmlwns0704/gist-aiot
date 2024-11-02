@@ -59,8 +59,8 @@ class DOA_2D_listener():
         self.Mic_tuning=Tuning(self.dev)
         
         device_index = None
-        for i in range(self.pyaudio_instance.get_device_count()):
-            dev = self.pyaudio_instance.get_device_info_by_index(i)
+        for i in range(self.PYAUDIO_INSTANCE.get_device_count()):
+            dev = self.PYAUDIO_INSTANCE.get_device_info_by_index(i)
             name = dev['name'].encode('utf-8')
             print('{}:{} with {} input channels'.format(i, name, dev['maxInputChannels']))
             if name.find('ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.channels:
