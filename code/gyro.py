@@ -67,3 +67,4 @@ print("beschleunigung_zout: ", ("%6d" % beschleunigung_zout), " skaliert: ", bes
 while True:
     print("X Rotation: " , get_x_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
     print("Y Rotation: " , get_y_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert))
+    input('...')
