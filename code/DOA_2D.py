@@ -146,35 +146,43 @@ class DOA_pra_listener(DOA_2D_listener):
         self.dim=dim
         
         # 1=1m, respeaker직경은 70mm=0.07m
-        if mic_positions is None:
-            if dim == 2:
-                self.mic_positions = np.array([
+        self.mic_positions = np.array([
                     [0, 0.035],
                     [-0.035, 0],
                     [0, -0.035],
                     [0.035, 0]
                 ]).T
-            elif dim == 3:
-                self.mic_positions = np.array([
-                    [0, 0.035, 0],
-                    [-0.035, 0, 0],
-                    [0, -0.035, 0],
-                    [0.035, 0, 0]
-                ]).T
-            else:
-                print('wrong dim!')
+        if dim == 3:
+            self.mic_3d_positions_x = np.array([
+                [0.035,0],
+                [-0.035,0],
+                [0,0.035]
+            ])
+            self.mic_3d_positions_y = np.array([
+                [0.035,0],
+                [-0.035,0],
+                [0,0.035]
+            ])
         #https://github.com/LCAV/pyroomacoustics/issues/166 버그를 고치기 위해 직접 설정?
-        num_points = 360  # azimuth에 대한 점의 개수
-        azimuth = np.linspace(0, 2*np.pi, num_points)  # -180도에서 180도까지
-        colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
+        # num_points = 360  # azimuth에 대한 점의 개수
+        # azimuth = np.linspace(0, 2*np.pi, num_points)  # -180도에서 180도까지
+        # colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
         
         self.doa=pra.doa.music.MUSIC(self.mic_positions,
                                      self.RATE,
                                      nfft=self.nfft,
-                                     c=343,
-                                     dim=dim,
-                                     azimuth=azimuth,
-                                     colatitude=colatitude)
+                                     c=343)
+        
+        if dim == 3:
+            self.doa_3d_x=pra.doa.music.MUSIC(self.mic_3d_positions_x,
+                                        self.RATE,
+                                        nfft=self.nfft,
+                                        c=343)
+            
+            self.doa_3d_y=pra.doa.music.MUSIC(self.mic_3d_positions_y,
+                                        self.RATE,
+                                        nfft=self.nfft,
+                                        c=343)
     
     def default_callback(self, input_test_frames):
         test_frames_np=np.array(input_test_frames)[:,:,1:5]
