@@ -182,7 +182,7 @@ class DOA_pra_listener(DOA_2D_listener):
                 [0.035,0],
                 [-0.035,0],
                 [0,0.035]
-            ])
+            ]).T
         #https://github.com/LCAV/pyroomacoustics/issues/166 버그를 고치기 위해 직접 설정?
         # num_points = 360  # azimuth에 대한 점의 개수
         # azimuth = np.linspace(0, 2*np.pi, num_points)  # -180도에서 180도까지
@@ -243,6 +243,7 @@ class DOA_pra_listener(DOA_2D_listener):
                     for ch in [2,4,6]
                 ]
             )
+            print(self.doa_3d.M)
             print(X_3D_x.shape)
             print(X_3D_y.shape)
             self.doa_3d.locate_sources(X_3D_x)
