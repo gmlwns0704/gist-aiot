@@ -271,13 +271,14 @@ class DOA_pra_listener(DOA_2D_listener):
     
     def non_blocking_3d_callback(self, in_data, frame_count, time_info, status):
         # 녹음 후 청크 저장
-        np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, 1)
+        np_data = resample(np.frombuffer(in_data, dtype=np.int16), self.CHUNK).reshape(-1,1).astype(np.int16)
         
         # 감지되었다면 test_frames도 같이 업데이트
         if self.detected:
             self.test_frames[self.chunk_count,:,4] = np_data[:]
         self.chunks[self.chunk_count,:,4] = np_data[:]
-        self.chunk_count += 1
+        # 카운트값 변경X, respeaker의 카운트값 따라감
+        # self.chunk_count += 1
         
         # 루프사이클
         if (self.chunk_count >= self.max_chunk_count):
