@@ -45,6 +45,13 @@ class DOA_2D_listener():
         self.RECORD_SECONDS = record_seconds
         self.MIN_VOLUME=min_volume
         self.SOUND_PRE_OFFSET=sound_pre_offset
+        
+        self.detected = False
+        self.start_detect_callback = False
+        self.chunk_count = 0
+        self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 4])
+        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 4])
             
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -78,49 +85,59 @@ class DOA_2D_listener():
                         rate=self.RATE,
                         input=True,
                         frames_per_buffer=self.CHUNK,
-                        input_device_index=device_index)
+                        input_device_index=device_index,
+                        stream_callback=self.non_blocking_callback)
     
     #0-5채널 전부 읽음
     def read_stream(self):
         data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
-    
-    def start_detect(self):
-        frames = []
-        self.test_frames=[]
-        # print(self.RATE)
-        # print(self.CHUNK)
-        # print(self.RECORD_SECONDS)
-        frame_len=int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        for i in range(frame_len):
-            frame = self.read_stream()
-            frames.append(frame)
-            self.test_frames.append(frame)
 
-        print("* waiting for loud volume")
-        i=0
+    def start_detect(self):
+        print("detection started")
         while True:
-            frames[i]=self.read_stream()
-            # data, 각 2byte
-            volume=audioop.rms(frames[i][:,0].flatten(),2)
-            if(volume>self.MIN_VOLUME):
-                print('loud sound detected')
-                # self.angle=self.Mic_tuning.direction
-                x=int(frame_len*self.SOUND_PRE_OFFSET)
-                if i>x:
-                    self.test_frames[:x]=frames[i-x:i]
-                else:
-                    self.test_frames[:x-i]=frames[frame_len-(x-i):]
-                    self.test_frames[x-i:x]=frames[:i]
-                for j in range(x,frame_len):
-                    self.test_frames[j]=self.read_stream()
-                # 분석시작
-                print('record done, start callback function')
-                self.default_callback(self.test_frames)
-            # i++
-            i = (i+1)%frame_len
+            if self.start_detect_callback:
+                print('detected, start detect callback')
+                self.detect_callback(self.test_frames)
+                self.start_detect_callback = False
+        return
     
-    def default_callback(self, input_test_frames):
+    # def start_detect(self):
+    #     frames = []
+    #     self.test_frames=[]
+    #     # print(self.RATE)
+    #     # print(self.CHUNK)
+    #     # print(self.RECORD_SECONDS)
+    #     frame_len=int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
+    #     for i in range(frame_len):
+    #         frame = self.read_stream()
+    #         frames.append(frame)
+    #         self.test_frames.append(frame)
+
+    #     print("* waiting for loud volume")
+    #     i=0
+    #     while True:
+    #         frames[i]=self.read_stream()
+    #         # data, 각 2byte
+    #         volume=audioop.rms(frames[i][:,0].flatten(),2)
+    #         if(volume>self.MIN_VOLUME):
+    #             print('loud sound detected')
+    #             # self.angle=self.Mic_tuning.direction
+    #             x=int(frame_len*self.SOUND_PRE_OFFSET)
+    #             if i>x:
+    #                 self.test_frames[:x]=frames[i-x:i]
+    #             else:
+    #                 self.test_frames[:x-i]=frames[frame_len-(x-i):]
+    #                 self.test_frames[x-i:x]=frames[:i]
+    #             for j in range(x,frame_len):
+    #                 self.test_frames[j]=self.read_stream()
+    #             # 분석시작
+    #             print('record done, start callback function')
+    #             self.default_callback(self.test_frames)
+    #         # i++
+    #         i = (i+1)%frame_len
+    
+    def detect_callback(self, input_test_frames):
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
         test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
@@ -130,6 +147,43 @@ class DOA_2D_listener():
         print(result)
         # print(self.angle)
         return
+    
+    def non_blocking_callback(self, in_data, frame_count, time_info, status):
+        # 녹음 후 청크 저장
+        np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
+        
+        # 감지되었다면 test_frames도 같이 업데이트
+        if self.detected:
+            self.test_frames[self.chunk_count][:,0:4] = np_data[:,1:5]
+        self.chunks[self.chunk_count][:,0:4] = np_data[:,1:5]
+        self.chunk_count += 1
+        
+        # 루프사이클
+        if (self.chunk_count >= self.max_chunk_count):
+            self.chunk_count = 0
+            # 감지가 되었고, 녹음이 끝남
+            if self.detected:
+                self.detected = False
+                self.start_detect_callback = True
+            return in_data, pyaudio.paContinue
+        
+        # detected
+        volume=audioop.rms(np_data[:,0].flatten(),2)
+        if volume>self.MIN_VOLUME:
+            print('loud sound detected')
+            # chunks에서 이전 값들 test_frames 로 옮김
+            x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
+            i=self.chunk_count
+            if i>x:
+                self.test_frames[:x]=self.chunks[i-x:i]
+            else:
+                self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
+                self.test_frames[x-i:x]=self.chunks[:i]
+            self.detected = True
+            # x부터 다음 청크 쓰기 시작
+            self.chunk_count=x
+        
+        return in_data, pyaudio.paContinue
     
     def stop(self):
         # 스트림 종료
@@ -187,7 +241,8 @@ class DOA_pra_listener(DOA_2D_listener):
                         channels=1,
                         rate=self.dim3_sr,
                         input=True,
-                        frames_per_buffer=self.dim3_chunk)
+                        frames_per_buffer=self.dim3_chunk,
+                        stream_callback=self.non_blocking_3d_callback)
             
             self.mic_3d_positions = np.array([
                 [0.035,0],
@@ -211,25 +266,45 @@ class DOA_pra_listener(DOA_2D_listener):
                                         c=343)
         return
     
+    def non_blocking_3d_callback(self, in_data, frame_count, time_info, status):
+        # 녹음 후 청크 저장
+        np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, 1)
+        
+        # 감지되었다면 test_frames도 같이 업데이트
+        if self.detected:
+            self.test_frames[self.chunk_count][:,4] = np_data[:,1]
+        self.chunks[self.chunk_count][:,4] = np_data[:,1]
+        self.chunk_count += 1
+        
+        # 루프사이클
+        if (self.chunk_count >= self.max_chunk_count):
+            self.chunk_count = 0
+            # 감지가 되었고, 녹음이 끝남
+            if self.detected:
+                self.detected = False
+                self.start_detect_callback = True
+            return in_data, pyaudio.paContinue
+        
+        return in_data, pyaudio.paContinue
+    
     #0-5채널+6채널(보조마이크) 추가
     #0: respeaker 후처리 오디오
     #1-4: respeaker raw
     #5: respeaker playback ???
     #6: 3d sub mic
-    def read_stream(self):
-        data = super().read_stream()
-        if self.dim == 3:
-            data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
-            resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1).astype(np.int16)
-            resampled_data_3d = self.sync_mic_max(mic_source=data[:,1], mic_dest=resampled_data_3d)
-            # print(data)
-            # print(data_3d)
-            # print(resampled_data_3d)
-            return np.hstack((data, resampled_data_3d))
-        else:
-            return data
+    # def read_stream(self):
+    #     data = super().read_stream()
+    #     if self.dim == 3:
+    #         data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
+    #         resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1).astype(np.int16)
+    #         # print(data)
+    #         # print(data_3d)
+    #         # print(resampled_data_3d)
+    #         return np.hstack((data, resampled_data_3d))
+    #     else:
+    #         return data
     
-    def default_callback(self, input_test_frames):
+    def detect_callback(self, input_test_frames):
         # print(input_test_frames)
         test_frames_np = np.array(input_test_frames)
         # print(test_frames_np.shape)
@@ -295,7 +370,7 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
-        return super().default_callback(input_test_frames)
+        return super().detect_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
     def __init__(self, channels=6,
@@ -307,7 +382,7 @@ class DOA_TDOA_listener(DOA_2D_listener):
                  input_model=None):
         super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
     
-    def default_callback(self, input_test_frames):
+    def detect_callback(self, input_test_frames):
         # 데시벨을 인식한 청크
         t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
         target_frames_np = np.array(input_test_frames[t-1:t+2])
@@ -316,4 +391,4 @@ class DOA_TDOA_listener(DOA_2D_listener):
         for ch in range(1,5):
             volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
         print(volume_timing)
-        return super().default_callback(input_test_frames)
+        return super().detect_callback(input_test_frames)
