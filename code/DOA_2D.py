@@ -329,52 +329,52 @@ class DOA_pra_listener(DOA_2D_listener):
         
         if self.dim == 3:
             # TDOA 방식
-            # # 데시벨을 인식한 청크
-            # t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-            # target_frames_np = np.array(input_test_frames[t])
+            # 데시벨을 인식한 청크
+            t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
+            target_frames_np = np.array(input_test_frames[t])
             
-            # # respeaker 중 마주보는 2개 + 보조마이크
-            # volume_timing_x=np.zeros(3, dtype=np.int16)
-            # volume_timing_y=np.zeros(3, dtype=np.int16)
-            # for i, ch in enumerate([0,2,4]):
-            #     volume_timing_x[i] = np.argmax(target_frames_np[:,ch].flatten())
-            # for i, ch in enumerate([1,3,4]):
-            #     volume_timing_y[i] = np.argmax(target_frames_np[:,ch].flatten())
-            # print(volume_timing_x)
-            # print(volume_timing_y)
+            # respeaker 중 마주보는 2개 + 보조마이크
+            volume_timing_x=np.zeros(3, dtype=np.int16)
+            volume_timing_y=np.zeros(3, dtype=np.int16)
+            for i, ch in enumerate([0,2,4]):
+                volume_timing_x[i] = np.argmax(target_frames_np[:,ch].flatten())
+            for i, ch in enumerate([1,3,4]):
+                volume_timing_y[i] = np.argmax(target_frames_np[:,ch].flatten())
+            print(volume_timing_x)
+            print(volume_timing_y)
             
             # pra기반 MUSIC방식
             # # 수직각도 DOA, 수직으로 교차하는 두개의 평면 사용
-            X_3D_y = np.array(
-                [
-                    pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-                    for ch in [0,2,4]
-                ]
-            )
-            X_3D_x = np.array(
-                [
-                    pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-                    for ch in [1,3,4]
-                ]
-            )
-            print(self.doa_3d.M)
-            print(X_3D_x.shape)
-            print(X_3D_y.shape)
-            self.doa_3d.locate_sources(X_3D_x)
-            v_angle_x = self.doa_3d.azimuth_recon
-            self.doa_3d.locate_sources(X_3D_y)
-            v_angle_y = self.doa_3d.azimuth_recon
+            # X_3D_y = np.array(
+            #     [
+            #         pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
+            #         for ch in [0,2,4]
+            #     ]
+            # )
+            # X_3D_x = np.array(
+            #     [
+            #         pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
+            #         for ch in [1,3,4]
+            #     ]
+            # )
+            # print(self.doa_3d.M)
+            # print(X_3D_x.shape)
+            # print(X_3D_y.shape)
+            # self.doa_3d.locate_sources(X_3D_x)
+            # v_angle_x = self.doa_3d.azimuth_recon
+            # self.doa_3d.locate_sources(X_3D_y)
+            # v_angle_y = self.doa_3d.azimuth_recon
             
-            print(f"Estimated DOA v_x angles: {v_angle_x / np.pi * 180.0} degrees")
-            print(f"Estimated DOA v_y angles: {v_angle_y / np.pi * 180.0} degrees")
+            # print(f"Estimated DOA v_x angles: {v_angle_x / np.pi * 180.0} degrees")
+            # print(f"Estimated DOA v_y angles: {v_angle_y / np.pi * 180.0} degrees")
             
-            # 평면각 반영해서 두 평면의 각 일정비율로 반영, 공식에 대해선 고민해볼것
-            v_angle = ((np.cos(h_angle)**2)*v_angle_x + (np.sin(h_angle)**2)*v_angle_y)
-            print(f"Estimated DOA v angles: {v_angle / np.pi * 180.0} degrees")
+            # # 평면각 반영해서 두 평면의 각 일정비율로 반영, 공식에 대해선 고민해볼것
+            # v_angle = ((np.cos(h_angle)**2)*v_angle_x + (np.sin(h_angle)**2)*v_angle_y)
+            # print(f"Estimated DOA v angles: {v_angle / np.pi * 180.0} degrees")
             
-            # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
-            offset_x, offset_y = gyro.get_angle()
-            # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
+            # # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
+            # offset_x, offset_y = gyro.get_angle()
+            # # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
         
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
