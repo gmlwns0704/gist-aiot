@@ -226,6 +226,9 @@ class DOA_pra_listener(DOA_2D_listener):
         self.dim3_sr=dim3_sr
         self.dim3_chunk=int(self.CHUNK*(self.dim3_sr/self.RATE))
         
+        self.chunks = np.zeros([self.max_chunk_count, 5])
+        self.test_frames = np.zeros([self.max_chunk_count, 5])
+        
         # 1=1m, respeaker직경은 70mm=0.07m
         self.mic_positions = np.array([
                     [0, 0.035],
