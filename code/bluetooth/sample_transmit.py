@@ -1,32 +1,45 @@
 import bluetooth
-
-# 블루투스 서버 소켓 생성 및 초기화
-server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-port = 1
-server_socket.bind(("", port))
-server_socket.listen(1)
-
-print("Waiting for connection on RFCOMM channel", port)
-
-# 클라이언트(스마트폰) 연결 대기
-client_socket, client_address = server_socket.accept()
-print("Accepted connection from", client_address)
-
+ 
+#######################################################
+# Scan
+#######################################################
+ 
+target_name = "iot_test"   # target device name
+target_address = None
+port = 1         # RFCOMM port
+ 
+nearby_devices = bluetooth.discover_devices()
+ 
+# scanning for target device
+for bdaddr in nearby_devices:
+    print(bluetooth.lookup_name( bdaddr ))
+    if target_name == bluetooth.lookup_name( bdaddr ):
+        target_address = bdaddr
+        break
+ 
+if target_address is not None:
+    print('device found. target address %s' % target_address)
+else:
+    print('could not find target bluetooth device nearby')
+ 
+#######################################################
+# Connect
+#######################################################
+ 
+# establishing a bluetooth connection
 try:
-    while True:
-        # 클라이언트로부터 데이터 수신
-        data = client_socket.recv(1024)
-        if not data:
-            break
-        print("Received:", data.decode("utf-8"))
-
-        # 응답 전송
-        message = "Received: " + data.decode("utf-8")
-        client_socket.send(message)
-
-except OSError:
+    sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
+    sock.connect((target_address, port))
+ 
+    while True:         
+        try:
+            recv_data = sock.recv(1024)
+            print(recv_data)
+            sock.send(recv_data)
+        except KeyboardInterrupt:
+            print("disconnected")
+            sock.close()
+            print("all done")
+except bluetooth.btcommon.BluetoothError as err:
+    print('An error occurred : %s ' % err)
     pass
-
-print("Disconnected.")
-client_socket.close()
-server_socket.close()
