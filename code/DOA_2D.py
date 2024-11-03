@@ -19,6 +19,7 @@ import usb.util
 
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
+import gyro
 
 def soundDataToFloat(SD):
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
@@ -194,6 +195,10 @@ class DOA_pra_listener(DOA_2D_listener):
         return
     
     #0-5채널+6채널(보조마이크) 추가
+    #0: respeaker 후처리 오디오
+    #1-4: respeaker raw
+    #5: respeaker playback ???
+    #6: 3d sub mic
     def read_stream(self):
         data = super().read_stream()
         if self.dim == 3:
@@ -203,20 +208,21 @@ class DOA_pra_listener(DOA_2D_listener):
             return data
     
     def default_callback(self, input_test_frames):
-        test_frames_np=np.array(input_test_frames)[:,:,1:5]
-        test_frames_np_3d=np.array(input_test_frames)[:,:,]
+        test_frames_np = np.array(input_test_frames)
         print(test_frames_np.shape)
         X = np.array(
             [
                 pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-                for ch in range(test_frames_np.shape[2])
+                for ch in [1,2,3,4]
             ]
         )
+        # 평면좌표 구하기
         self.doa.locate_sources(X)
         h_angle = self.doa.azimuth_recon
         print(f"Estimated DOA angles: {h_angle / np.pi * 180.0} degrees")
         
         if self.dim == 3:
+            # 수직각도 DOA, 수직으로 교차하는 두개의 평면 사용
             X_3D_y = np.array(
                 [
                     pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
@@ -233,11 +239,19 @@ class DOA_pra_listener(DOA_2D_listener):
             v_angle_x = self.doa_3d.azimuth_recon
             self.doa_3d.locate_source(X_3D_y)
             v_angle_y = self.doa_3d.azimuth_recon
+            
             print(f"Estimated DOA v_x angles: {v_angle_x / np.pi * 180.0} degrees")
             print(f"Estimated DOA v_y angles: {v_angle_y / np.pi * 180.0} degrees")
+            
+            # 평면각 반영해서 두 평면의 각 일정비율로 반영, 공식에 대해선 고민해볼것
             v_angle = ((np.cos(h_angle)**2)*v_angle_x + (np.sin(h_angle)**2)*v_angle_y)
             print(f"Estimated DOA v angles: {v_angle / np.pi * 180.0} degrees")
+            
+            # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
+            offset_x, offset_y = gyro.get_angle()
+            v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
         
+        # 원본콜백 호출, 모델로 추정
         return super().default_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
