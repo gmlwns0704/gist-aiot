@@ -152,12 +152,6 @@ class DOA_2D_listener():
         # 녹음 후 청크 저장
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         
-        # 감지되었다면 test_frames도 같이 업데이트
-        if self.detected:
-            self.test_frames[self.chunk_count,:,0:4] = np_data[:,1:5]
-        self.chunks[self.chunk_count,:,0:4] = np_data[:,1:5]
-        self.chunk_count += 1
-        
         # 루프사이클
         if (self.chunk_count >= self.max_chunk_count):
             self.chunk_count = 0
@@ -167,22 +161,29 @@ class DOA_2D_listener():
                 self.start_detect_callback = True
             return in_data, pyaudio.paContinue
         
-        # detected
-        volume=audioop.rms(np_data[:,0].flatten(),2)
-        if volume>self.MIN_VOLUME:
-            print('loud sound detected')
-            # chunks에서 이전 값들 test_frames 로 옮김
-            x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
-            i=self.chunk_count
-            if i>x:
-                self.test_frames[:x]=self.chunks[i-x:i]
-            else:
-                self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
-                self.test_frames[x-i:x]=self.chunks[:i]
-            self.detected = True
-            # x부터 다음 청크 쓰기 시작
-            self.chunk_count=x
+        # 감지되었다면 test_frames도 같이 업데이트
+        if self.detected:
+            self.test_frames[self.chunk_count,:,0:4] = np_data[:,1:5]
+        self.chunks[self.chunk_count,:,0:4] = np_data[:,1:5]
+        self.chunk_count += 1
         
+        if not self.detected:
+            volume=audioop.rms(np_data[:,0].flatten(),2)
+            # detected
+            if volume>self.MIN_VOLUME:
+                print('loud sound detected')
+                # chunks에서 이전 값들 test_frames 로 옮김
+                x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
+                i=self.chunk_count
+                if i>x:
+                    self.test_frames[:x]=self.chunks[i-x:i]
+                else:
+                    self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
+                    self.test_frames[x-i:x]=self.chunks[:i]
+                self.detected = True
+                # x부터 다음 청크 쓰기 시작
+                self.chunk_count=x
+            
         return in_data, pyaudio.paContinue
     
     def stop(self):
