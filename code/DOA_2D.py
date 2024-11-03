@@ -6,6 +6,8 @@ import time
 import sys
 import torch
 import threading
+#서로 sr이 다르면 통일해줘야함
+from scipy.signal import resample
 
 import pyroomacoustics as pra
 import noisereduce as nr
@@ -155,6 +157,7 @@ class DOA_pra_listener(DOA_2D_listener):
                          input_model=input_model)
         self.nfft=nfft
         self.dim=dim
+        self.dim3_sr=48000
         
         # 1=1m, respeaker직경은 70mm=0.07m
         self.mic_positions = np.array([
@@ -168,7 +171,7 @@ class DOA_pra_listener(DOA_2D_listener):
             self.PYAUDIO_INSTANCE_DIM3 = pyaudio.PyAudio()
             self.STREAM_DIM3 = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
                         channels=1,
-                        rate=48000,
+                        rate=self.dim3_sr,
                         input=True,
                         frames_per_buffer=self.CHUNK)
             
@@ -203,7 +206,9 @@ class DOA_pra_listener(DOA_2D_listener):
         data = super().read_stream()
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1, 1)
-            return np.vstack((data, data_3d)).shape
+            print(data.shape)
+            print(data_3d.shape)
+            return np.hstack((data, data_3d))
         else:
             return data
     
