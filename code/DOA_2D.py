@@ -332,9 +332,9 @@ class DOA_pra_listener(DOA_2D_listener):
             # respeaker 중 마주보는 2개 + 보조마이크
             volume_timing_x=np.zeros(3)
             volume_timing_y=np.zeros(3)
-            for i, ch in enumerate([0,2,5]):
+            for i, ch in enumerate([0,2,4]):
                 volume_timing_x[i] = np.argmax(target_frames_np[:,ch].flatten())
-            for i, ch in enumerate([1,3,5]):
+            for i, ch in enumerate([1,3,4]):
                 volume_timing_y[i] = np.argmax(target_frames_np[:,ch].flatten())
             print(volume_timing_x)
             print(volume_timing_y)
