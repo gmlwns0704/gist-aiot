@@ -140,7 +140,7 @@ class DOA_2D_listener():
     def detect_callback(self, input_test_frames):
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
-        test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0:4]).flatten()
+        test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
         #모델에 넣기위한 작업과정
         feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
         result = self.MODEL.test_by_feat(feat)
