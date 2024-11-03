@@ -168,7 +168,7 @@ class DOA_pra_listener(DOA_2D_listener):
             self.PYAUDIO_INSTANCE_DIM3 = pyaudio.PyAudio()
             self.STREAM_DIM3 = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
                         channels=1,
-                        rate=self.RATE,
+                        rate=48000,
                         input=True,
                         frames_per_buffer=self.CHUNK)
             
