@@ -209,7 +209,7 @@ class DOA_pra_listener(DOA_2D_listener):
         data = super().read_stream()
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
-            resampled_data_3d = resample(data_3d, int(len(data_3d)*(self.RATE/self.dim3_sr))).reshape(-1,1)
+            resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1)
             return np.hstack((data, resampled_data_3d))
         else:
             return data
@@ -260,8 +260,7 @@ class DOA_pra_listener(DOA_2D_listener):
             
             # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
             offset_x, offset_y = gyro.get_angle()
-            v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
-            print(f"Estimated final DOA v angles: {v_angle / np.pi * 180.0} degrees")
+            # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
         
         # 원본콜백 호출, 모델로 추정
         return super().default_callback(input_test_frames)
