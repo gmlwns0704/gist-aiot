@@ -242,6 +242,8 @@ class DOA_pra_listener(DOA_2D_listener):
                     for ch in [2,4,6]
                 ]
             )
+            print(X_3D_x.shape)
+            print(X_3D_y.shape)
             self.doa_3d.locate_sources(X_3D_x)
             v_angle_x = self.doa_3d.azimuth_recon
             self.doa_3d.locate_sources(X_3D_y)
