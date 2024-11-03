@@ -5,6 +5,8 @@ sudo bluetoothctl agent on
 sudo bluetoothctl discoverable on
 sudo bluetoothctl pairable on
 sudo bluetoothctl advertise on
+sudo hciconfig hci0 piscan
+
 
 source /home/rasp/venv/bin/python
 cd /home/rasp/venv/gist-aiot/code
