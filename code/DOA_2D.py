@@ -51,8 +51,8 @@ class DOA_2D_listener():
         self.start_detect_callback = False
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 4])
-        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 4])
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 4], dtype=np.int16)
+        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 4], dtype=np.int16)
             
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -229,8 +229,8 @@ class DOA_pra_listener(DOA_2D_listener):
         self.dim3_sr=dim3_sr
         self.dim3_chunk=int(self.CHUNK*(self.dim3_sr/self.RATE))
         
-        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5])
-        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5])
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         
         # 1=1m, respeaker직경은 70mm=0.07m
         self.mic_positions = np.array([
@@ -333,8 +333,8 @@ class DOA_pra_listener(DOA_2D_listener):
             target_frames_np = np.array(input_test_frames[t])
             
             # respeaker 중 마주보는 2개 + 보조마이크
-            volume_timing_x=np.zeros(3)
-            volume_timing_y=np.zeros(3)
+            volume_timing_x=np.zeros(3, dtype=np.int16)
+            volume_timing_y=np.zeros(3, dtype=np.int16)
             for i, ch in enumerate([0,2,4]):
                 volume_timing_x[i] = np.argmax(target_frames_np[:,ch].flatten())
             for i, ch in enumerate([1,3,4]):
@@ -394,7 +394,7 @@ class DOA_TDOA_listener(DOA_2D_listener):
         t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
         target_frames_np = np.array(input_test_frames[t-1:t+2])
         # raw데이터 채널 갯수
-        volume_timing=np.zeros(4)
+        volume_timing=np.zeros(4, dtype=np.int16)
         for ch in range(1,5):
             volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
         print(volume_timing)
