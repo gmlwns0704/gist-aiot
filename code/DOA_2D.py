@@ -337,9 +337,9 @@ class DOA_pra_listener(DOA_2D_listener):
             volume_timing_x=np.zeros(3, dtype=np.int16)
             volume_timing_y=np.zeros(3, dtype=np.int16)
             for i, ch in enumerate([0,2,4]):
-                volume_timing_x[i] = np.argmax(target_frames_np[:,ch].flatten())
+                volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten())
             for i, ch in enumerate([1,3,4]):
-                volume_timing_y[i] = np.argmax(target_frames_np[:,ch].flatten())
+                volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten())
             print(volume_timing_x)
             print(volume_timing_y)
             
