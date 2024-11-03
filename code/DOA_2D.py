@@ -248,7 +248,7 @@ class DOA_pra_listener(DOA_2D_listener):
         if self.dim == 3:
             # 데시벨을 인식한 청크
             t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-            target_frames_np = np.array(input_test_frames[t-1:t+2])
+            target_frames_np = np.array(input_test_frames[t])
             
             # respeaker 중 마주보는 2개 + 보조마이크
             volume_timing_x=np.zeros(3)
