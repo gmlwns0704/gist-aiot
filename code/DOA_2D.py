@@ -152,20 +152,9 @@ class DOA_2D_listener():
         # 녹음 후 청크 저장
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         
-        # 루프사이클
-        if (self.chunk_count >= self.max_chunk_count):
-            self.chunk_count = 0
-            # 감지가 되었고, 녹음이 끝남
-            if self.detected:
-                self.detected = False
-                self.start_detect_callback = True
-            return in_data, pyaudio.paContinue
-        
-        # 감지되었다면 test_frames도 같이 업데이트
         if self.detected:
             self.test_frames[self.chunk_count,:,0:4] = np_data[:,1:5]
         self.chunks[self.chunk_count,:,0:4] = np_data[:,1:5]
-        self.chunk_count += 1
         
         if not self.detected:
             volume=audioop.rms(np_data[:,0].flatten(),2)
@@ -183,6 +172,18 @@ class DOA_2D_listener():
                 self.detected = True
                 # x부터 다음 청크 쓰기 시작
                 self.chunk_count=x
+                
+        # 감지되었다면 test_frames도 같이 업데이트
+        self.chunk_count += 1
+        
+        # 루프사이클
+        if (self.chunk_count >= self.max_chunk_count):
+            self.chunk_count = 0
+            # 감지가 되었고, 녹음이 끝남
+            if self.detected:
+                self.detected = False
+                self.start_detect_callback = True
+            return in_data, pyaudio.paContinue
             
         return in_data, pyaudio.paContinue
     
