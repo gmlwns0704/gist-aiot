@@ -254,10 +254,11 @@ class DOA_pra_listener(DOA_2D_listener):
             volume_timing_x=np.zeros(3)
             volume_timing_y=np.zeros(3)
             for i, ch in enumerate([1,3,6]):
-                volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
+                volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten())
             for i, ch in enumerate([2,4,6]):
-                volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
+                volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten())
             print(volume_timing_x)
+            print(volume_timing_y)
             
             # pra기반 각계산, 다른 마이크끼리 섞는건 너무 어려워서 버려짐
             # # 수직각도 DOA, 수직으로 교차하는 두개의 평면 사용
