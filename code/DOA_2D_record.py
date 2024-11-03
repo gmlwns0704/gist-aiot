@@ -58,7 +58,7 @@ for i in range(p.get_device_count()):
     dev = p.get_device_info_by_index(i)
     name = dev['name'].encode('utf-8')
     print('{}:{} with {} input channels'.format(i, name, dev['maxInputChannels']))
-    if name.find(b'ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.RESP_CHANNELS:
+    if name.find(b'ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == 6:
         device_index = i
         break
 
