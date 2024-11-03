@@ -275,8 +275,8 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 감지되었다면 test_frames도 같이 업데이트
         if self.detected:
-            self.test_frames[self.chunk_count,:,4] = np_data[:]
-        self.chunks[self.chunk_count,:,4] = np_data[:]
+            self.test_frames[self.chunk_count,:,4] = np_data[:].T
+        self.chunks[self.chunk_count,:,4] = np_data[:].T
         # 카운트값 변경X, respeaker의 카운트값 따라감
         # self.chunk_count += 1
         
