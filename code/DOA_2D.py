@@ -51,8 +51,8 @@ class DOA_2D_listener():
         self.start_detect_callback = False
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 4], dtype=np.int16)
-        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 4], dtype=np.int16)
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
             
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -97,10 +97,15 @@ class DOA_2D_listener():
     def start_detect(self):
         print("detection started")
         while True:
+            x_rot, y_rot = gyro.get_angle()
+            print(x_rot)
+            print(y_rot)
             if self.start_detect_callback:
                 print('detected, start detect callback')
                 self.detect_callback(self.test_frames)
                 self.start_detect_callback = False
+            
+            time.sleep(0.5)
         return
     
     # def start_detect(self):
@@ -154,8 +159,8 @@ class DOA_2D_listener():
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         
         if self.detected:
-            self.test_frames[self.chunk_count,:,0:4] = np_data[:,1:5]
-        self.chunks[self.chunk_count,:,0:4] = np_data[:,1:5]
+            self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
+        self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
         if not self.detected:
             volume=audioop.rms(np_data[:,0].flatten(),2)
@@ -278,8 +283,8 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 감지되었다면 test_frames도 같이 업데이트
         if self.detected:
-            self.test_frames[self.chunk_count,:,4] = np.squeeze(np_data[:])
-        self.chunks[self.chunk_count,:,4] = np.squeeze(np_data[:])
+            self.test_frames[self.chunk_count,:,5] = np.squeeze(np_data[:])
+        self.chunks[self.chunk_count,:,5] = np.squeeze(np_data[:])
         # 카운트값 변경X, respeaker의 카운트값 따라감
         # self.chunk_count += 1
         
@@ -318,7 +323,7 @@ class DOA_pra_listener(DOA_2D_listener):
         X = np.array(
             [
                 pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-                for ch in [0,1,2,3]
+                for ch in [1,2,3,4]
             ]
         )
         print(X.shape)
@@ -336,9 +341,9 @@ class DOA_pra_listener(DOA_2D_listener):
             # respeaker 중 마주보는 2개 + 보조마이크
             volume_timing_x=np.zeros(3, dtype=np.int16)
             volume_timing_y=np.zeros(3, dtype=np.int16)
-            for i, ch in enumerate([0,2,4]):
+            for i, ch in enumerate([1,3,5]):
                 volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
-            for i, ch in enumerate([1,3,4]):
+            for i, ch in enumerate([2,4,5]):
                 volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
             print(volume_timing_x)
             print(volume_timing_y)
