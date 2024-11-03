@@ -1,20 +1,20 @@
-from bluetooth import *
+import bluetooth
  
 def receiveMsg():
     uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
  
     # RFCOMM 포트를 통해 데이터 통신을 하기 위한 준비    
-    server_sock=BluetoothSocket( RFCOMM )
-    server_sock.bind(('',PORT_ANY))
+    server_sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
+    server_sock.bind(('',bluetooth.PORT_ANY))
     server_sock.listen(1)
  
     port = server_sock.getsockname()[1]
  
     # 블루투스 서비스를 Advertise
-    advertise_service( server_sock, "BtChat",
+    bluetooth.advertise_service( server_sock, "BtChat",
             service_id = uuid,
-            service_classes = [ uuid, SERIAL_PORT_CLASS ],
-            profiles = [ SERIAL_PORT_PROFILE ] )
+            service_classes = [ uuid, bluetooth.SERIAL_PORT_CLASS ],
+            profiles = [ bluetooth.SERIAL_PORT_PROFILE ] )
     
     print("Waiting for connection : channel %d" % port)
     # 클라이언트가 연결될 때까지 대기
