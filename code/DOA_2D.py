@@ -216,13 +216,14 @@ class DOA_pra_listener(DOA_2D_listener):
     
     def default_callback(self, input_test_frames):
         test_frames_np = np.array(input_test_frames)
-        print(test_frames_np.shape)
+        # print(test_frames_np.shape)
         X = np.array(
             [
                 pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
                 for ch in [1,2,3,4]
             ]
         )
+        print(X.shape)
         # 평면좌표 구하기
         self.doa.locate_sources(X)
         h_angle = self.doa.azimuth_recon
