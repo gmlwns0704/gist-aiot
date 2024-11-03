@@ -211,7 +211,7 @@ class DOA_pra_listener(DOA_2D_listener):
         data = super().read_stream()
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
-            resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1)
+            resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1).astype(np.int16)
             print(data)
             print(data_3d)
             print(resampled_data_3d)
