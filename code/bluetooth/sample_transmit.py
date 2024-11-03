@@ -1,32 +1,73 @@
-import asyncio
-from bleak import BleakScanner, BleakClient
+import dbus
+import dbus.mainloop.glib
+import dbus.service
+from gi.repository import GLib
+import os
 
-# 스마트폰에서 광고하는 장치의 MAC 주소와 서비스 UUID
-TARGET_MAC_ADDRESS = "xx:xx:xx:xx:xx:xx"  # 스마트폰의 BLE 주소로 변경
-TARGET_SERVICE_UUID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # 전송하고자 하는 서비스 UUID
+# 서비스와 특성 UUID 설정
+GATT_SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef0"
+GATT_CHARACTERISTIC_UUID = "12345678-1234-5678-1234-56789abcdef1"
 
-async def run():
-    # 장치 스캔
-    print("Scanning for BLE devices...")
-    devices = await BleakScanner.discover()
-    for device in devices:
-        print(device)
+class Application(dbus.service.Object):
+    """
+    D-Bus GATT Application 설정
+    """
+    def __init__(self, bus):
+        self.path = '/org/bluez/example/service'
+        self.bus = bus
+        self.service = Service(bus, self.path)
+        dbus.service.Object.__init__(self, bus, self.path)
 
-    # 대상 장치 찾기
-    device = next((d for d in devices if d.address == TARGET_MAC_ADDRESS), None)
-    if device is None:
-        print("Target device not found.")
-        return
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
 
-    print("Connecting to", TARGET_MAC_ADDRESS)
-    async with BleakClient(device) as client:
-        print("Connected to device")
+class Service(dbus.service.Object):
+    """
+    GATT Service 정의
+    """
+    def __init__(self, bus, path):
+        self.path = path
+        self.bus = bus
+        self.characteristics = []
+        self.uuid = GATT_SERVICE_UUID
+        self.primary = True
 
-        # 서비스에서 데이터를 수신
-        while True:
-            data = await client.read_gatt_char(TARGET_SERVICE_UUID)
-            print("Received:", data.decode("utf-8"))
-            await asyncio.sleep(1)
+        self.characteristics.append(Characteristic(bus, self.path, 0))
 
-# 비동기 실행
-asyncio.run(run())
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
+
+class Characteristic(dbus.service.Object):
+    """
+    GATT Characteristic 설정
+    """
+    def __init__(self, bus, service_path, index):
+        self.path = service_path + '/char' + str(index)
+        self.bus = bus
+        self.uuid = GATT_CHARACTERISTIC_UUID
+        self.service = service_path
+        dbus.service.Object.__init__(self, bus, self.path)
+
+    @dbus.service.method("org.bluez.GattCharacteristic1", in_signature='', out_signature='ay')
+    def ReadValue(self):
+        print("Read request received")
+        return [dbus.Byte(b) for b in "Hello from Raspberry Pi".encode()]
+
+def main():
+    # Bluetooth 초기화
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    bus = dbus.SystemBus()
+    app = Application(bus)
+
+    # Bluetooth 광고 설정
+    os.system("sudo hciconfig hci0 up")
+    os.system("sudo hciconfig hci0 leadv 3")  # Advertising 모드 활성화
+
+    print("GATT server running...")
+
+    # Main loop 실행
+    mainloop = GLib.MainLoop()
+    mainloop.run()
+
+if __name__ == "__main__":
+    main()
