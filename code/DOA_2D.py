@@ -212,12 +212,15 @@ class DOA_pra_listener(DOA_2D_listener):
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
             resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1)
+            print(data)
+            print(data_3d)
+            print(resampled_data_3d)
             return np.hstack((data, resampled_data_3d))
         else:
             return data
     
     def default_callback(self, input_test_frames):
-        print(input_test_frames)
+        # print(input_test_frames)
         test_frames_np = np.array(input_test_frames)
         # print(test_frames_np.shape)
         X = np.array(
@@ -266,7 +269,7 @@ class DOA_pra_listener(DOA_2D_listener):
             # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
         
         # 원본콜백 호출, 모델로 추정
-        print(input_test_frames)
+        # print(input_test_frames)
         return super().default_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
