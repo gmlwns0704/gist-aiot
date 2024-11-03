@@ -24,8 +24,8 @@ import pre_and_model.model as model
 import gyro
 
 def soundDataToFloat(SD):
-    # print(SD.shape)
-    # print(SD)
+    print(SD.shape)
+    print(SD)
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
 
