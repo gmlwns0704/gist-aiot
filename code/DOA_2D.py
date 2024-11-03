@@ -272,8 +272,8 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 감지되었다면 test_frames도 같이 업데이트
         if self.detected:
-            self.test_frames[self.chunk_count][:,4] = np_data[:,1]
-        self.chunks[self.chunk_count][:,4] = np_data[:,1]
+            self.test_frames[self.chunk_count][:,4] = np_data[:]
+        self.chunks[self.chunk_count][:,4] = np_data[:]
         self.chunk_count += 1
         
         # 루프사이클
