@@ -209,7 +209,7 @@ class DOA_pra_listener(DOA_2D_listener):
         data = super().read_stream()
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
-            resampled_data_3d = resample(data_3d, int(len(data_3d)*(self.RATE/self.dim3_sr)))
+            resampled_data_3d = resample(data_3d, int(len(data_3d)*(self.RATE/self.dim3_sr))).reshape(-1,1)
             return np.hstack((data, resampled_data_3d))
         else:
             return data
