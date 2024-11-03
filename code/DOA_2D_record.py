@@ -53,12 +53,22 @@ if not dev:
     quit()
 Mic_tuning=Tuning(dev)
 
+device_index = None
+for i in range(p.get_device_count()):
+    dev = p.get_device_info_by_index(i)
+    name = dev['name'].encode('utf-8')
+    print('{}:{} with {} input channels'.format(i, name, dev['maxInputChannels']))
+    if name.find(b'ReSpeaker 4 Mic Array') >= 0 and dev['maxInputChannels'] == self.RESP_CHANNELS:
+        device_index = i
+        break
+
 # 입력 스트림 설정
 stream = p.open(format=FORMAT,
                 channels=CHANNELS,
                 rate=RATE,
                 input=True,
-                frames_per_buffer=CHUNK)
+                frames_per_buffer=CHUNK,
+                input_device_index=device_index)
 
 stream2 = p2.open(format=FORMAT,
                 channels=1,
