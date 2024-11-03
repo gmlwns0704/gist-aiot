@@ -24,6 +24,8 @@ import pre_and_model.model as model
 import gyro
 
 def soundDataToFloat(SD):
+    print(SD.shape)
+    print(SD)
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
 
@@ -210,9 +212,7 @@ class DOA_pra_listener(DOA_2D_listener):
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
             resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1)
-            res = np.hstack((data, resampled_data_3d))
-            print(res.shape)
-            return res
+            return np.hstack((data, resampled_data_3d))
         else:
             return data
     
