@@ -29,7 +29,7 @@ def read_stream():
         return np.hstack((data, resampled_data_3d))
 
 # mic_dest의 데이터를 mic_source에 맞춤
-def sync_mic_max(self, mic_dest, mic_source):
+def sync_mic_max(mic_dest, mic_source):
     mic_base_max = np.max(np.abs(mic_source))
     mic_source_max = np.max(np.abs(mic_dest))
     scale_factor = mic_base_max / mic_source_max
