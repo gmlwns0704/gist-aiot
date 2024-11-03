@@ -206,8 +206,6 @@ class DOA_pra_listener(DOA_2D_listener):
         data = super().read_stream()
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1, 1)
-            print(data.shape)
-            print(data_3d.shape)
             return np.hstack((data, data_3d))
         else:
             return data
