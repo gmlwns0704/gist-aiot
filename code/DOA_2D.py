@@ -147,7 +147,8 @@ class DOA_pra_listener(DOA_2D_listener):
                  input_model=None,
                  nfft=256,
                  mic_positions=None,
-                 dim=2):
+                 dim=2,
+                 dim3_sr=48000):
         super().__init__(channels=channels,
                          sr=sr,
                          chunk=chunk,
@@ -157,7 +158,8 @@ class DOA_pra_listener(DOA_2D_listener):
                          input_model=input_model)
         self.nfft=nfft
         self.dim=dim
-        self.dim3_sr=48000
+        self.dim3_sr=dim3_sr
+        self.dim3_chunk=self.CHUNK*(self.RATE/self.dim3_sr)
         
         # 1=1m, respeaker직경은 70mm=0.07m
         self.mic_positions = np.array([
@@ -168,12 +170,13 @@ class DOA_pra_listener(DOA_2D_listener):
                 ]).T
         if dim == 3:
             # 3D용 보조 마이크 인스턴스
+            # 3D 마이크는 sr이 다르므로 다른 크기의 청크로 저장하고 후처리
             self.PYAUDIO_INSTANCE_DIM3 = pyaudio.PyAudio()
             self.STREAM_DIM3 = self.PYAUDIO_INSTANCE.open(format=self.FORMAT,
                         channels=1,
                         rate=self.dim3_sr,
                         input=True,
-                        frames_per_buffer=self.CHUNK)
+                        frames_per_buffer=self.dim3_chunk)
             
             self.mic_3d_positions = np.array([
                 [0.035,0],
@@ -205,8 +208,9 @@ class DOA_pra_listener(DOA_2D_listener):
     def read_stream(self):
         data = super().read_stream()
         if self.dim == 3:
-            data_3d = np.frombuffer(self.STREAM_DIM3.read(self.CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1, 1)
-            return np.hstack((data, data_3d))
+            data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
+            resampled_data_3d = resample(data_3d, int(len(data_3d)*(self.RATE/self.dim3_sr)))
+            return np.hstack((data, resampled_data_3d))
         else:
             return data
     
@@ -238,9 +242,9 @@ class DOA_pra_listener(DOA_2D_listener):
                     for ch in [2,4,6]
                 ]
             )
-            self.doa_3d.locate_source(X_3D_x)
+            self.doa_3d.locate_sources(X_3D_x)
             v_angle_x = self.doa_3d.azimuth_recon
-            self.doa_3d.locate_source(X_3D_y)
+            self.doa_3d.locate_sources(X_3D_y)
             v_angle_y = self.doa_3d.azimuth_recon
             
             print(f"Estimated DOA v_x angles: {v_angle_x / np.pi * 180.0} degrees")
