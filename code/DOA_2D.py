@@ -217,6 +217,7 @@ class DOA_pra_listener(DOA_2D_listener):
             return data
     
     def default_callback(self, input_test_frames):
+        print(input_test_frames)
         test_frames_np = np.array(input_test_frames)
         # print(test_frames_np.shape)
         X = np.array(
@@ -265,6 +266,7 @@ class DOA_pra_listener(DOA_2D_listener):
             # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
         
         # 원본콜백 호출, 모델로 추정
+        print(input_test_frames)
         return super().default_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
