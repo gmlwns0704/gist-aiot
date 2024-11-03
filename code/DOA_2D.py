@@ -261,6 +261,7 @@ class DOA_pra_listener(DOA_2D_listener):
             # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
             offset_x, offset_y = gyro.get_angle()
             v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
+            print(f"Estimated final DOA v angles: {v_angle / np.pi * 180.0} degrees")
         
         # 원본콜백 호출, 모델로 추정
         return super().default_callback(input_test_frames)
