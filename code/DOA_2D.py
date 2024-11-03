@@ -136,6 +136,15 @@ class DOA_2D_listener():
         self.STREAM.stop_stream()
         self.STREAM.close()
         self.PYAUDIO_INSTANCE.terminate()
+        return
+    
+    # mic_dest의 데이터를 mic_source에 맞춤
+    def sync_mic_max(self, mic_dest, mic_source):
+        mic_base_max = np.max(np.abs(mic_source))
+        mic_source_max = np.max(np.abs(mic_dest))
+        scale_factor = mic_base_max / mic_source_max
+        mic2_scaled = (mic_dest * scale_factor).astype(np.int16)
+        return mic2_scaled
 
 
 class DOA_pra_listener(DOA_2D_listener):
@@ -212,6 +221,7 @@ class DOA_pra_listener(DOA_2D_listener):
         if self.dim == 3:
             data_3d = np.frombuffer(self.STREAM_DIM3.read(self.dim3_chunk, exception_on_overflow=False), dtype=np.int16)
             resampled_data_3d = resample(data_3d, self.CHUNK).reshape(-1,1).astype(np.int16)
+            resampled_data_3d = self.sync_mic_max(mic_source=data[:,1], mic_dest=resampled_data_3d)
             # print(data)
             # print(data_3d)
             # print(resampled_data_3d)
