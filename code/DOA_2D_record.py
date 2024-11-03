@@ -16,6 +16,17 @@ import usb.util
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
 
+from scipy.signal import resample
+
+def read_stream():
+        data = np.frombuffer(stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1,CHANNELS)
+        data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
+        resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
+        # print(data)
+        # print(data_3d)
+        # print(resampled_data_3d)
+        return np.hstack((data, resampled_data_3d))
+
 # 설정
 FORMAT = pyaudio.paInt16
 CHANNELS = 6  # ReSpeaker v2.0은 6개의 채널을 지원합니다
@@ -29,6 +40,7 @@ SOUND_OFFSET_RATE=0.3
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
+p2 = pyaudio.PyAudio()
 
 # 모델객체 생성
 rasp_model = model.Rasp_Model()
@@ -48,20 +60,26 @@ stream = p.open(format=FORMAT,
                 input=True,
                 frames_per_buffer=CHUNK)
 
+stream2 = p2.open(format=FORMAT,
+                channels=1,
+                rate=RATE*3,
+                input=True,
+                frames_per_buffer=CHUNK*3)
+
 print("* generating initial frames")
 frames = []
 test_frames=[]
 frame_len=(int(RATE / CHUNK * RECORD_SECONDS))
 for _ in range(frame_len):
-    data = stream.read(CHUNK)
-    frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
-    test_frames.append(np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS))
+    data = read_stream()
+    frames.append(data)
+    test_frames.append(data)
 
 print("* waiting for loud volume")
 i=0
 while True:
-    data=stream.read(CHUNK)
-    frames[i]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+    data=read_stream()
+    frames[i]=data
     # data, 각 2byte
     volume=audioop.rms(data,2)
     if(volume>MIN_VOLUME):
@@ -75,8 +93,8 @@ while True:
             test_frames[:i]=frames[:i]
             test_frames[i:int(frame_len*SOUND_OFFSET_RATE)]=frames[int(frame_len*SOUND_OFFSET_RATE)+i:]
         for j in range(int(frame_len*SOUND_OFFSET_RATE),frame_len):
-            data=stream.read(CHUNK)
-            test_frames[j]=np.frombuffer(data, dtype=np.int16).reshape(-1, CHANNELS)
+            data=read_stream()
+            test_frames[j]=data
         break
     i = i+1
     if(i>=frame_len):
@@ -91,10 +109,14 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
+stream2.stop_stream()
+stream2.close()
+p2.terminate()
+
 audio_data = np.vstack(test_frames)
 
 # 각 채널별로 WAV 파일로 저장
-for channel in range(CHANNELS):
+for channel in range(CHANNELS+1):
     channel_data = audio_data[:, channel]
     wave_output_filename = WAVE_OUTPUT_FILENAME_TEMPLATE.format(channel + 1)
     
