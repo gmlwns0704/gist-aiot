@@ -98,8 +98,8 @@ class DOA_2D_listener():
         print("detection started")
         while True:
             x_rot, y_rot = gyro.get_angle()
-            print(x_rot)
-            print(y_rot)
+            if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
+                print('!!!machine tilted too much!!!')
             if self.start_detect_callback:
                 print('detected, start detect callback')
                 self.detect_callback(self.test_frames)
