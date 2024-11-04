@@ -163,9 +163,15 @@ class DOA_2D_listener():
         feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
         result = self.MODEL.test_by_feat(feat)
         
-        estimated_class = str(np.argmax(result.detach().numpy()))
-        if self.bt_class is not None:
-            self.bt_class.send('class:'+estimated_class+'\n')
+        estimated = result.detach().numpy()
+        estimated_class = int(np.argmax(result.detach().numpy()))
+        estimated_prob = estimated[estimated_class]/np.sum(estimated+np.min(estimated))
+        if estimated_prob > 0.7:
+            if self.bt_class is not None:
+                self.bt_class.send('class:'+str(estimated_class)+'\n')
+        else:
+            print('maybe nothing')
+            print(estimated)
         # print(self.angle)
         return
     
