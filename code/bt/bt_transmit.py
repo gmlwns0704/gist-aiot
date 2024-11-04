@@ -3,7 +3,8 @@ import bluetooth
 class bt_communicate:
     def __init__(self):
         #적당히 수정?
-        self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+        # self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+        self.uuid = "00001101-0000-1000-8000-00805F9B34FB"
         self.server_sock=bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self.server_sock.bind(('',bluetooth.PORT_ANY))
         self.server_sock.listen(1)
