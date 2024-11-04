@@ -172,7 +172,7 @@ class DOA_2D_listener():
                 self.bt_class.send('class:'+str(estimated_class)+'\n')
         else:
             print('maybe nothing')
-            print(estimated)
+            print(estimated_prob)
         # print(self.angle)
         return
     
