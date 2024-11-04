@@ -11,7 +11,8 @@ listener = DOA_2D.DOA_pra_listener(
         record_seconds=int(sys.argv[1]),
         sound_pre_offset=float(sys.argv[2]),
         min_volume=int(sys.argv[3]),
-        bt_class=bt_class
+        bt_class=bt_class,
+        estimate_rate=float(sys.argv[4])
         )
 
 listener.start_detect()
