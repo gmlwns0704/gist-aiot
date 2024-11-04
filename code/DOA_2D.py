@@ -164,8 +164,8 @@ class DOA_2D_listener():
         result = self.MODEL.test_by_feat(feat)
         
         estimated = result.detach().numpy()
-        estimated_class = int(np.argmax(estimated)[0])
-        estimated_prob = estimated[estimated_class]/np.sum(estimated+np.min(estimated))
+        estimated_class = int(np.argmax(estimated))
+        estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
         if estimated_prob > 0.7:
             if self.bt_class is not None:
                 self.bt_class.send('class:'+str(estimated_class)+'\n')
