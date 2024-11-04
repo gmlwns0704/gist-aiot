@@ -111,7 +111,7 @@ class DOA_2D_listener():
             if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
                 print('!!!machine tilted too much!!!')
                 if self.bt_class is not None:
-                    self.bt_class.send('tilt!\n')
+                    self.bt_class.send('warn:tilt\n')
             if self.start_detect_callback:
                 print('detected, start detect callback')
                 self.detect_callback(self.test_frames)
@@ -165,7 +165,7 @@ class DOA_2D_listener():
         
         estimated_class = str(np.argmax(result.detach().numpy()))
         if self.bt_class is not None:
-            self.bt_class.send(estimated_class+'\n')
+            self.bt_class.send('class:'+estimated_class+'\n')
         # print(self.angle)
         return
     
@@ -401,7 +401,7 @@ class DOA_pra_listener(DOA_2D_listener):
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
         if self.bt_class is not None:
-            self.bt_class.send(str(h_angle/np.pi*180.0)+'\n')
+            self.bt_class.send('angle:'+str(h_angle[0]/np.pi*180.0)+'\n')
         return super().detect_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
