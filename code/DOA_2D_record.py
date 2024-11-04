@@ -25,7 +25,7 @@ def read_stream():
         # print(data)
         # print(data_3d)
         # print(resampled_data_3d)
-        return np.hstack((data, resampled_data_3d))
+        return np.hstack((data, resampled_data_3d)), data_3d
 
 # 설정
 FORMAT = pyaudio.paInt16

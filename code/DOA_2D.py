@@ -70,11 +70,11 @@ class DOA_2D_listener():
             
         # resepeaker찾기
         # DOAANGLE에 사용
-        self.dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
+        # self.dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
         if not self.dev:
             print('device not found')
             return None
-        self.Mic_tuning=Tuning(self.dev)
+        # self.Mic_tuning=Tuning(self.dev)
         
         device_index = None
         for i in range(self.PYAUDIO_INSTANCE.get_device_count()):
@@ -215,13 +215,13 @@ class DOA_2D_listener():
         self.PYAUDIO_INSTANCE.terminate()
         return
     
-    # mic_dest의 데이터를 mic_source에 맞춤
-    def sync_mic_max(self, mic_dest, mic_source):
-        mic_base_max = np.max(np.abs(mic_source))
-        mic_source_max = np.max(np.abs(mic_dest))
-        scale_factor = mic_base_max / mic_source_max
-        mic2_scaled = (mic_dest * scale_factor).astype(np.int16)
-        return mic2_scaled
+    # # mic_dest의 데이터를 mic_source에 맞춤
+    # def sync_mic_max(self, mic_dest, mic_source):
+    #     mic_base_max = np.max(np.abs(mic_source))
+    #     mic_source_max = np.max(np.abs(mic_dest))
+    #     scale_factor = mic_base_max / mic_source_max
+    #     mic2_scaled = (mic_dest * scale_factor).astype(np.int16)
+    #     return mic2_scaled
 
 
 class DOA_pra_listener(DOA_2D_listener):
