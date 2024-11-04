@@ -60,6 +60,7 @@ class DOA_2D_listener():
         self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         
         self.bt_class = bt_class
+        self.bt_buffer = ''
         
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -171,10 +172,12 @@ class DOA_2D_listener():
         estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
         if estimated_prob > self.estimate_rate:
             if self.bt_class is not None:
-                self.bt_class.send('class:'+str(estimated_class)+'\n')
+                self.bt_buffer+='class:'+str(estimated_class)+'\n'
+                self.bt_class.send(self.bt_buffer)
         else:
             print('maybe nothing')
             print(estimated_prob)
+            self.bt_buffer=''
         # print(self.angle)
         return
     
@@ -412,7 +415,7 @@ class DOA_pra_listener(DOA_2D_listener):
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
         if self.bt_class is not None:
-            self.bt_class.send('angle:'+str(int(h_angle[0]/np.pi*180.0))+'\n')
+            self.bt_buffer+='angle:'+str(int(h_angle[0]/np.pi*180.0))+'\n'
         return super().detect_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
