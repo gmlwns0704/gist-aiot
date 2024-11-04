@@ -164,6 +164,7 @@ class DOA_2D_listener():
         result = self.MODEL.test_by_feat(feat)
         
         estimated = result.detach().numpy()
+        print(estimated)
         estimated_class = int(np.argmax(estimated))
         estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
         if estimated_prob > 0.7:
