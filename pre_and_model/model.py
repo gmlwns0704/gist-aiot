@@ -37,7 +37,6 @@ class ResidualBlock(nn.Module):
         out += shortcut
         out = F.relu(out)
         return out
-    
 class CNNModel(nn.Module):
     def __init__(self):
         super(CNNModel, self).__init__()
@@ -57,7 +56,7 @@ class CNNModel(nn.Module):
 
         # Fully connected layers
         self.fc1 = nn.Linear(64, 32)
-        self.fc2 = nn.Linear(32, 4)
+        self.fc2 = nn.Linear(32, 3)
 
         # Dropout
         self.dropout = nn.Dropout(0.5)
