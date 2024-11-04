@@ -12,6 +12,8 @@ from scipy.signal import resample
 import pyroomacoustics as pra
 import noisereduce as nr
 
+from bt import bt_transmit
+
 sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
 
@@ -38,7 +40,8 @@ class DOA_2D_listener():
                  record_seconds=3,
                  min_volume=1500,
                  sound_pre_offset=0.3,
-                 input_model=None):
+                 input_model=None,
+                 bt_class=None):
         self.FORMAT = pyaudio.paInt16
         self.RESP_CHANNELS = 6
         self.RATE = sr
@@ -53,7 +56,9 @@ class DOA_2D_listener():
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
-            
+        
+        self.bt_class = bt_class
+        
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
         
@@ -88,12 +93,15 @@ class DOA_2D_listener():
                         frames_per_buffer=self.CHUNK,
                         input_device_index=device_index,
                         stream_callback=self.non_blocking_callback)
+        
+        if self.bt_class is not None:
+            self.bt_class.accept()
     
     #0-5채널 전부 읽음
     def read_stream(self):
         data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
-
+    
     def start_detect(self):
         print("detection started")
         while True:
@@ -150,7 +158,10 @@ class DOA_2D_listener():
         #모델에 넣기위한 작업과정
         feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
         result = self.MODEL.test_by_feat(feat)
-        print(result)
+        
+        estimated_class = str(np.argmax(np.array(result)))
+        if self.bt_class is not None:
+            self.bt_class.send(estimated_class)
         # print(self.angle)
         return
     
@@ -383,6 +394,8 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
+        if self.bt_class is not None:
+            self.bt_class.send(str(h_angle/np.pi*180.0))
         return super().detect_callback(input_test_frames)
 
 class DOA_TDOA_listener(DOA_2D_listener):
