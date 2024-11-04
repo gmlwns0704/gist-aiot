@@ -97,6 +97,7 @@ class DOA_2D_listener():
         if self.bt_class is not None:
             print('start waiting bt connection')
             self.bt_class.accept()
+            print('bt connected')
     
     #0-5채널 전부 읽음
     def read_stream(self):
