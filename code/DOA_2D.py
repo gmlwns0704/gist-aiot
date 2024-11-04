@@ -18,6 +18,7 @@ sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
 
 from usb_4_mic_array.tuning import Tuning
+from pixel_ring import pixel_ring
 import usb.core
 import usb.util
 
