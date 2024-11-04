@@ -41,7 +41,8 @@ class DOA_2D_listener():
                  min_volume=1500,
                  sound_pre_offset=0.3,
                  input_model=None,
-                 bt_class=None):
+                 bt_class=None,
+                 estimate_rate=0.5):
         self.FORMAT = pyaudio.paInt16
         self.RESP_CHANNELS = 6
         self.RATE = sr
@@ -49,6 +50,7 @@ class DOA_2D_listener():
         self.RECORD_SECONDS = record_seconds
         self.MIN_VOLUME=min_volume
         self.SOUND_PRE_OFFSET=sound_pre_offset
+        self.estimate_rate=estimate_rate
         
         self.detected = False
         self.start_detect_callback = False
@@ -167,7 +169,7 @@ class DOA_2D_listener():
         print(estimated)
         estimated_class = int(np.argmax(estimated))
         estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
-        if estimated_prob > 0.7:
+        if estimated_prob > self.estimate_rate:
             if self.bt_class is not None:
                 self.bt_class.send('class:'+str(estimated_class)+'\n')
         else:
@@ -244,7 +246,8 @@ class DOA_pra_listener(DOA_2D_listener):
                  nfft=256,
                  mic_positions=None,
                  dim=2,
-                 dim3_sr=48000):
+                 dim3_sr=48000,
+                 estimate_rate=0.5):
         super().__init__(channels=channels,
                          sr=sr,
                          chunk=chunk,
@@ -252,7 +255,8 @@ class DOA_pra_listener(DOA_2D_listener):
                          min_volume=min_volume,
                          sound_pre_offset=sound_pre_offset,
                          input_model=input_model,
-                         bt_class=bt_class)
+                         bt_class=bt_class,
+                         estimate_rate=estimate_rate)
         self.nfft=nfft
         self.dim=dim
         self.dim3_sr=dim3_sr
