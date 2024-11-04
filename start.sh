@@ -4,8 +4,8 @@ sudo bluetoothctl power on
 sudo bluetoothctl agent on
 sudo bluetoothctl discoverable on
 sudo bluetoothctl pairable on
-sudo bluetoothctl advertise on
-# echo "start setting hciconfig"
+# sudo bluetoothctl advertise on
+echo "start setting hciconfig"
 sudo hciconfig hci0 piscan
 echo "start activate venv"
 source /home/rasp/venv/bin/python
