@@ -22,19 +22,10 @@ def read_stream():
         data = np.frombuffer(stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1,CHANNELS)
         data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
         resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
-        resampled_data_3d = sync_mic_max(mic_source=data[:,1], mic_dest=resampled_data_3d)
         # print(data)
         # print(data_3d)
         # print(resampled_data_3d)
         return np.hstack((data, resampled_data_3d))
-
-# mic_dest의 데이터를 mic_source에 맞춤
-def sync_mic_max(mic_dest, mic_source):
-    mic_base_max = np.max(np.abs(mic_source))
-    mic_source_max = np.max(np.abs(mic_dest))
-    scale_factor = mic_base_max / mic_source_max
-    mic2_scaled = (mic_dest * scale_factor).astype(np.int16)
-    return mic2_scaled
 
 # 설정
 FORMAT = pyaudio.paInt16
@@ -79,11 +70,11 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK,
                 input_device_index=device_index)
 
-# stream2 = p2.open(format=FORMAT,
-#                 channels=1,
-#                 rate=RATE*3,
-#                 input=True,
-#                 frames_per_buffer=CHUNK*3)
+stream2 = p2.open(format=FORMAT,
+                channels=1,
+                rate=RATE*3,
+                input=True,
+                frames_per_buffer=CHUNK*3)
 
 print("* generating initial frames")
 frames = []
@@ -128,14 +119,14 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-# stream2.stop_stream()
-# stream2.close()
-# p2.terminate()
+stream2.stop_stream()
+stream2.close()
+p2.terminate()
 
 audio_data = np.vstack(test_frames)
 
 # 각 채널별로 WAV 파일로 저장
-for channel in range(CHANNELS):
+for channel in range(CHANNELS+1):
     channel_data = audio_data[:, channel]
     wave_output_filename = WAVE_OUTPUT_FILENAME_TEMPLATE.format(channel + 1)
     
