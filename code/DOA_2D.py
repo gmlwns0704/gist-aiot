@@ -230,6 +230,7 @@ class DOA_pra_listener(DOA_2D_listener):
                  min_volume=1500,
                  sound_pre_offset=0.3,
                  input_model=None,
+                 bt_class=None,
                  nfft=256,
                  mic_positions=None,
                  dim=2,
@@ -240,7 +241,8 @@ class DOA_pra_listener(DOA_2D_listener):
                          record_seconds=record_seconds,
                          min_volume=min_volume,
                          sound_pre_offset=sound_pre_offset,
-                         input_model=input_model)
+                         input_model=input_model,
+                         bt_class=bt_class)
         self.nfft=nfft
         self.dim=dim
         self.dim3_sr=dim3_sr
