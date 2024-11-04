@@ -79,11 +79,11 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK,
                 input_device_index=device_index)
 
-stream2 = p2.open(format=FORMAT,
-                channels=1,
-                rate=RATE*3,
-                input=True,
-                frames_per_buffer=CHUNK*3)
+# stream2 = p2.open(format=FORMAT,
+#                 channels=1,
+#                 rate=RATE*3,
+#                 input=True,
+#                 frames_per_buffer=CHUNK*3)
 
 print("* generating initial frames")
 frames = []
@@ -128,14 +128,14 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-stream2.stop_stream()
-stream2.close()
-p2.terminate()
+# stream2.stop_stream()
+# stream2.close()
+# p2.terminate()
 
 audio_data = np.vstack(test_frames)
 
 # 각 채널별로 WAV 파일로 저장
-for channel in range(CHANNELS+1):
+for channel in range(CHANNELS):
     channel_data = audio_data[:, channel]
     wave_output_filename = WAVE_OUTPUT_FILENAME_TEMPLATE.format(channel + 1)
     
