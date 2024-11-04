@@ -71,9 +71,9 @@ class DOA_2D_listener():
         # resepeaker찾기
         # DOAANGLE에 사용
         # self.dev=usb.core.find(idVendor=0x2886, idProduct=0x0018)
-        if not self.dev:
-            print('device not found')
-            return None
+        # if not self.dev:
+        #     print('device not found')
+        #     return None
         # self.Mic_tuning=Tuning(self.dev)
         
         device_index = None
