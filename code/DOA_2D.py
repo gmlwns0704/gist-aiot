@@ -194,8 +194,9 @@ class DOA_2D_listener():
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
         if not self.detected:
-            weighted= waveform_analysis.A_weight(np_data, self.RATE)
-            volume=audioop.rms(weighted.flatten(),2)
+            # weighted= waveform_analysis.A_weight(np_data, self.RATE)
+            # volume=audioop.rms(weighted.flatten(),2)
+            volume=audioop.rms(np_data.flatten(),2)
             print(volume)
             # detected
             if volume>self.MIN_VOLUME:
