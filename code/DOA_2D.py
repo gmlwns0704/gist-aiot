@@ -200,7 +200,7 @@ class DOA_2D_listener():
             # volume=audioop.rms(weighted.flatten(),2)
             volume=audioop.rms(np_data.flatten(),2)
             self.mean_volume += (volume-self.mean_volume)*0.1
-            print(str(volume)+'/'+str(self.mean_volume))
+            # print(str(volume)+'/'+str(self.mean_volume))
             # detected
             if volume>self.mean_volume*self.volume_gap_rate:
                 print('loud sound detected')
