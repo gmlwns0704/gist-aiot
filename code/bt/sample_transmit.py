@@ -1,4 +1,5 @@
 import bluetooth
+# pip install git+https://github.com/pybluez/pybluez.git#egg=pybluez
 import bt_transmit
 
 bt_class = bt_transmit.bt_communicate()

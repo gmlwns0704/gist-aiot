@@ -169,7 +169,7 @@ class DOA_2D_listener():
         estimated = result.detach().numpy()[0,:]
         print(estimated)
         estimated_class = int(np.argmax(estimated))
-        estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
+        estimated_prob = (estimated+abs(np.min(estimated))[estimated_class])/np.sum(estimated+abs(np.min(estimated)))
         if estimated_prob > self.estimate_rate:
             if self.bt_class is not None:
                 print(estimated_prob)
