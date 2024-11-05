@@ -192,6 +192,7 @@ class DOA_2D_listener():
         
         if not self.detected:
             volume=audioop.rms(np_data[:,1:5].flatten(),2)
+            print(volume)
             # detected
             if volume>self.MIN_VOLUME:
                 print('loud sound detected')
