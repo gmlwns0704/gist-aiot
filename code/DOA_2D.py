@@ -429,7 +429,7 @@ class DOA_pra_listener(DOA_2D_listener):
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
         if self.bt_class is not None:
-            self.bt_buffer+='angle:'+str(int(h_angle[0]/np.pi*180.0))+'\n'
+            self.bt_buffer+='angle:'+str(int((360-h_angle[0])/np.pi*180.0))+'\n'
         return super().detect_callback(input_test_frames)
 
 # class DOA_TDOA_listener(DOA_2D_listener):
