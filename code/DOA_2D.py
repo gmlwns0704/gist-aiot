@@ -191,7 +191,7 @@ class DOA_2D_listener():
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
         if not self.detected:
-            volume=audioop.rms(np_data[:,0].flatten(),2)
+            volume=audioop.rms(np_data[:,1:5].flatten(),2)
             # detected
             if volume>self.MIN_VOLUME:
                 print('loud sound detected')
