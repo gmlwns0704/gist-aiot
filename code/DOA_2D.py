@@ -41,7 +41,7 @@ class DOA_2D_listener():
                  sr=16000,
                  chunk=1024,
                  record_seconds=3,
-                 min_volume=1500,
+                 volume_gap_rate=1.3,
                  sound_pre_offset=0.3,
                  input_model=None,
                  bt_class=None,
@@ -51,7 +51,7 @@ class DOA_2D_listener():
         self.RATE = sr
         self.CHUNK = chunk
         self.RECORD_SECONDS = record_seconds
-        self.MIN_VOLUME=min_volume
+        self.volume_gap_rate=volume_gap_rate
         self.SOUND_PRE_OFFSET=sound_pre_offset
         self.estimate_rate=estimate_rate
         
@@ -61,6 +61,8 @@ class DOA_2D_listener():
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        
+        self.mean_volume = 0
         
         self.bt_class = bt_class
         self.bt_buffer = ''
@@ -197,9 +199,10 @@ class DOA_2D_listener():
             # weighted= waveform_analysis.A_weight(np_data, self.RATE)
             # volume=audioop.rms(weighted.flatten(),2)
             volume=audioop.rms(np_data.flatten(),2)
+            self.mean_volume += (volume-self.mean_volume)*0.1
             print(volume)
             # detected
-            if volume>self.MIN_VOLUME:
+            if volume>self.mean_volume*self.volume_gap_rate:
                 print('loud sound detected')
                 # chunks에서 이전 값들 test_frames 로 옮김
                 x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
@@ -249,7 +252,7 @@ class DOA_pra_listener(DOA_2D_listener):
                  sr=16000,
                  chunk=1024,
                  record_seconds=3,
-                 min_volume=1500,
+                 volume_gap_rate=1.3,
                  sound_pre_offset=0.3,
                  input_model=None,
                  bt_class=None,
@@ -262,7 +265,7 @@ class DOA_pra_listener(DOA_2D_listener):
                          sr=sr,
                          chunk=chunk,
                          record_seconds=record_seconds,
-                         min_volume=min_volume,
+                         volume_gap_rate=volume_gap_rate,
                          sound_pre_offset=sound_pre_offset,
                          input_model=input_model,
                          bt_class=bt_class,
@@ -371,20 +374,24 @@ class DOA_pra_listener(DOA_2D_listener):
         print(f"Estimated DOA angles: {h_angle / np.pi * 180.0} degrees")
         
         if self.dim == 3:
-            # TDOA 방식
-            # 데시벨을 인식한 청크
-            t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-            target_frames_np = np.array(input_test_frames[t-1:t+2])
+            print('dim 3 is not supported for now!')
+            exit()
+        
+        # if self.dim == 3:
+        #     # TDOA 방식
+        #     # 데시벨을 인식한 청크
+        #     t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
+        #     target_frames_np = np.array(input_test_frames[t-1:t+2])
             
-            # respeaker 중 마주보는 2개 + 보조마이크
-            volume_timing_x=np.zeros(3, dtype=np.int16)
-            volume_timing_y=np.zeros(3, dtype=np.int16)
-            for i, ch in enumerate([1,3,5]):
-                volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
-            for i, ch in enumerate([2,4,5]):
-                volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
-            print(volume_timing_x)
-            print(volume_timing_y)
+        #     # respeaker 중 마주보는 2개 + 보조마이크
+        #     volume_timing_x=np.zeros(3, dtype=np.int16)
+        #     volume_timing_y=np.zeros(3, dtype=np.int16)
+        #     for i, ch in enumerate([1,3,5]):
+        #         volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.volume_gap_rate)
+        #     for i, ch in enumerate([2,4,5]):
+        #         volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.volume_gap_rate)
+        #     print(volume_timing_x)
+        #     print(volume_timing_y)
             
             # pra기반 MUSIC방식
             # # 수직각도 DOA, 수직으로 교차하는 두개의 평면 사용
@@ -425,23 +432,23 @@ class DOA_pra_listener(DOA_2D_listener):
             self.bt_buffer+='angle:'+str(int(h_angle[0]/np.pi*180.0))+'\n'
         return super().detect_callback(input_test_frames)
 
-class DOA_TDOA_listener(DOA_2D_listener):
-    def __init__(self, channels=6,
-                 sr=16000,
-                 chunk=1024,
-                 record_seconds=3,
-                 min_volume=1500,
-                 sound_pre_offset=0.3,
-                 input_model=None):
-        super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
+# class DOA_TDOA_listener(DOA_2D_listener):
+#     def __init__(self, channels=6,
+#                  sr=16000,
+#                  chunk=1024,
+#                  record_seconds=3,
+#                  min_volume=1500,
+#                  sound_pre_offset=0.3,
+#                  input_model=None):
+#         super().__init__(channels, sr, chunk, record_seconds, min_volume, sound_pre_offset, input_model)
     
-    def detect_callback(self, input_test_frames):
-        # 데시벨을 인식한 청크
-        t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-        target_frames_np = np.array(input_test_frames[t-1:t+2])
-        # raw데이터 채널 갯수
-        volume_timing=np.zeros(4, dtype=np.int16)
-        for ch in range(1,5):
-            volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.MIN_VOLUME)
-        print(volume_timing)
-        return super().detect_callback(input_test_frames)
+#     def detect_callback(self, input_test_frames):
+#         # 데시벨을 인식한 청크
+#         t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
+#         target_frames_np = np.array(input_test_frames[t-1:t+2])
+#         # raw데이터 채널 갯수
+#         volume_timing=np.zeros(4, dtype=np.int16)
+#         for ch in range(1,5):
+#             volume_timing[ch-1] = np.argmax(target_frames_np[:,:,ch].flatten()>self.volume_gap_rate)
+#         print(volume_timing)
+#         return super().detect_callback(input_test_frames)

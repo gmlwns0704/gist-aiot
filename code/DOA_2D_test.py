@@ -22,7 +22,7 @@ if t == 'pra':
     listener = DOA_2D.DOA_pra_listener(
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
-        min_volume=min_volume,
+        volume_gap_rate=min_volume,
         dim=int(input('dim(2or3): '))
     )
 elif t == 'tdoa':
@@ -35,7 +35,7 @@ else:
     listener = DOA_2D.DOA_2D_listener(
         record_seconds=record_seconds,
         sound_pre_offset=sound_pre_offset,
-        min_volume=min_volume
+        volume_gap_rate=min_volume
     )
 
 listener.start_detect()
