@@ -198,7 +198,7 @@ class DOA_2D_listener():
         if not self.detected:
             # weighted= waveform_analysis.A_weight(np_data, self.RATE)
             # volume=audioop.rms(weighted.flatten(),2)
-            volume=audioop.rms(np_data.flatten(),2)
+            volume=audioop.rms(np_data[1].flatten(),2)
             self.mean_volume += (volume-self.mean_volume)*0.1
             # print(str(volume)+'/'+str(self.mean_volume))
             # detected
