@@ -8,6 +8,7 @@ import torch
 import threading
 #서로 sr이 다르면 통일해줘야함
 from scipy.signal import resample
+import scipy.signal as signal
 
 import pyroomacoustics as pra
 import noisereduce as nr
@@ -25,12 +26,34 @@ import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
 import gyro
 
+# mfcc를 위해 실수형으로 교체
 def soundDataToFloat(SD):
     # print(SD)
     # print(SD.shape)
     # print(SD.dtype)
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
+
+# 사람의 주파수대역과 비슷하게 느끼기위해 A-가중치 필터
+def a_weighting_filter(fs, data):
+    # A-weighting filter coefficients
+    f1 = 20.598997
+    f2 = 107.65265
+    f3 = 737.86223
+    f4 = 12194.217
+    A1000 = 1.9997
+
+    # Create the filter coefficients for the A-weighting filter
+    NUMs = [(2 * np.pi * f4)**2 * (10**(A1000 / 20)), 0, 0, 0, 0]
+    DENs = np.polymul([1, 4 * np.pi * f4, (2 * np.pi * f4)**2],
+                      [1, 4 * np.pi * f1, (2 * np.pi * f1)**2])
+    DENs = np.polymul(np.polymul(DENs, [1, 2 * np.pi * f3]),
+                      [1, 2 * np.pi * f2])
+
+    # Apply the filter using lfilter from scipy.signal
+    b, a = signal.bilinear(NUMs, DENs, fs)
+    weighted_data = signal.lfilter(b, a, data)
+    return weighted_data
 
 class DOA_2D_listener():
     def __init__(self,
@@ -191,7 +214,8 @@ class DOA_2D_listener():
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
         if not self.detected:
-            volume=audioop.rms(np_data[:,1:5].flatten(),2)
+            weighted = a_weighting_filter(fs=self.RATE, data=np_data[:,1:5])
+            volume=audioop.rms(weighted.flatten(),2)
             print(volume)
             # detected
             if volume>self.MIN_VOLUME:
