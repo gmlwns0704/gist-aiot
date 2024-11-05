@@ -172,6 +172,7 @@ class DOA_2D_listener():
         estimated_prob = estimated[estimated_class]/np.sum(estimated+abs(np.min(estimated)))
         if estimated_prob > self.estimate_rate:
             if self.bt_class is not None:
+                print(estimated_prob)
                 self.bt_buffer+='class:'+str(estimated_class)+'\n'
                 self.bt_class.send(self.bt_buffer)
         else:
