@@ -28,9 +28,10 @@ import pre_and_model.model as model
 import gyro
 
 # mfcc를 위해 실수형으로 교체
+# https://www.kaggle.com/discussions/general/213391
 def soundDataToFloat(SD):
     # print(SD)
-    # print(SD.shape)
+    print(SD.shape)
     # print(SD.dtype)
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
