@@ -6,6 +6,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
 
+import numpy as np
+
 from PIL import Image
 
 class ResidualBlock(nn.Module):
@@ -108,7 +110,7 @@ class Rasp_Model():
         return self.model(input_tensor)
     
     def test_from_image(self):
-        data = Image.open('./sample.npy')
+        data = np.open('./sample.npy')
         print('image load done')
         # 이미지를 텐서로 변환
         input_tensor = torch.Tensor(data).unsqueeze(0).unsqueeze(0)
