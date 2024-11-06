@@ -170,7 +170,8 @@ class DOA_2D_listener():
         # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
         #모델에 넣기위한 작업과정
         # feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
-        feat = mfcc.pre_progressing(input_test_frames[:,:,0], self.RATE)
+        input_test_frames_ch0 = input_test_frames[:,:,0].copy()
+        feat = mfcc.pre_progressing(input_test_frames_ch0, self.RATE)
         result = self.MODEL.test_by_feat(feat)
         
         estimated = result.detach().numpy()[0,:]
