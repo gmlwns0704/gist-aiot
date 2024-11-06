@@ -312,10 +312,12 @@ class DOA_pra_listener(DOA_2D_listener):
                                      c=343)
         
         if dim == 3:
-            self.doa_3d=pra.doa.music.MUSIC(self.mic_3d_positions,
-                                        self.RATE,
-                                        nfft=self.nfft,
-                                        c=343)
+            print('dims 3 is not supported!')
+            quit()
+            # self.doa_3d=pra.doa.music.MUSIC(self.mic_3d_positions,
+            #                             self.RATE,
+            #                             nfft=self.nfft,
+            #                             c=343)
         return
     
     def non_blocking_3d_callback(self, in_data, frame_count, time_info, status):
