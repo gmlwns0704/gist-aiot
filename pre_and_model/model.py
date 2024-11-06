@@ -91,11 +91,11 @@ class Rasp_Model():
         # self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
         # self.criterion = nn.CrossEntropyLoss()
         # 모델 맞춤형 트랜스포머
-        # self.img_transform = transforms.Compose([
-        #     transforms.Resize((32, 32)),          # 모델에 맞는 크기로 조정
-        #     transforms.Grayscale(num_output_channels=3),  # 3채널로 변환
-        #     transforms.ToTensor()
-        # ])
+        self.img_transform = transforms.Compose([
+            transforms.Resize((32, 32)),          # 모델에 맞는 크기로 조정
+            transforms.Grayscale(num_output_channels=3),  # 3채널로 변환
+            transforms.ToTensor()
+        ])
         return
     
     def test_by_feat(self, data):
