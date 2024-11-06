@@ -107,7 +107,7 @@ class Rasp_Model():
         # print(input_tensor.shape)
         return self.model(input_tensor)
     
-    def test_from_image(self, path):
+    def test_from_image(self):
         img = Image.open('./sample.jpg').convert('L')
         print('image load done')
         # 이미지를 텐서로 변환
