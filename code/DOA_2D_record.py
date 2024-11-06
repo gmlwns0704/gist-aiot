@@ -20,12 +20,12 @@ from scipy.signal import resample
 
 def read_stream():
         data = np.frombuffer(stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1,CHANNELS)
-        data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
-        resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
-        # print(data)
+        # data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
+        # resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
+        # # print(data)
         # print(data_3d)
         # print(resampled_data_3d)
-        return np.hstack((data, resampled_data_3d)), data_3d
+        return data
 
 # 설정
 FORMAT = pyaudio.paInt16
@@ -40,7 +40,7 @@ SOUND_OFFSET_RATE=0.3
 
 # PyAudio 객체 생성
 p = pyaudio.PyAudio()
-p2 = pyaudio.PyAudio()
+# p2 = pyaudio.PyAudio()
 
 # 모델객체 생성
 rasp_model = model.Rasp_Model()
@@ -70,11 +70,11 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK,
                 input_device_index=device_index)
 
-stream2 = p2.open(format=FORMAT,
-                channels=1,
-                rate=RATE*3,
-                input=True,
-                frames_per_buffer=CHUNK*3)
+# stream2 = p2.open(format=FORMAT,
+#                 channels=1,
+#                 rate=RATE*3,
+#                 input=True,
+#                 frames_per_buffer=CHUNK*3)
 
 print("* generating initial frames")
 frames = []
@@ -119,9 +119,9 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-stream2.stop_stream()
-stream2.close()
-p2.terminate()
+# stream2.stop_stream()
+# stream2.close()
+# p2.terminate()
 
 audio_data = np.vstack(test_frames)
 
