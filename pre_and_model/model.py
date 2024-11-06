@@ -102,7 +102,9 @@ class Rasp_Model():
         self.model.eval()
         # numpy를 입력으로 받는 모델에 맞춰 수정
         # input_tensor = self.img_transform(img).unsqueeze(0)
-        input_tensor = torch.Tensor(data)
+        input_tensor = torch.Tensor(data).unsqueeze(0)
+        print(input_tensor)
+        print(input_tensor.shape)
         return self.model(input_tensor)
     
     def test_from_image(self):
