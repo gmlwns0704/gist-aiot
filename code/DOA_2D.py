@@ -31,7 +31,7 @@ import gyro
 # https://www.kaggle.com/discussions/general/213391
 def soundDataToFloat(SD):
     # print(SD)
-    print(SD.shape)
+    # print(SD.shape)
     # print(SD.dtype)
     # Converts integer representation back into librosa-friendly floats, given a numpy array SD
     return np.array([ np.float32((s>>2)/(32768.0)) for s in SD])
@@ -167,9 +167,10 @@ class DOA_2D_listener():
     def detect_callback(self, input_test_frames):
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
-        test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
+        # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
         #모델에 넣기위한 작업과정
-        feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
+        # feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
+        feat = mfcc.pre_progressing(input_test_frames, self.RATE)
         result = self.MODEL.test_by_feat(feat)
         
         estimated = result.detach().numpy()[0,:]

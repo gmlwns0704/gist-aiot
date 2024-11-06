@@ -32,7 +32,8 @@ def pre_progressing_file(filename, size=[32,32]):
 def pre_progressing(y, sr, size=[32,32]):
     # padding = lambda a, i: a[:, 0:i] if a.shape[1] > i else np.hstack((a, np.zeros((a.shape[0], i-a.shape[1]))))
     # 이미지 ndarray
-    feat = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40, norm='ortho', n_fft=2048, hop_length=512)
+    y_float = librosa.util.buf_to_float(y)
+    feat = librosa.feature.mfcc(y=y_float, sr=sr, n_mfcc=40, norm='ortho', n_fft=2048, hop_length=512)
     # 패딩된 ndarray
     print('mfcc done')
     # feat = padding(feat, 500)
