@@ -1,35 +1,28 @@
-import os
-
-from IPython import display
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
 import tensorflow as tf
 import tensorflow_hub as hub
-import tensorflow_io as tfio
+import librosa
+import numpy as np
 
-@tf.function
-def load_wav_16k_mono(filename):
-    """ Load a WAV file, convert it to a float tensor, resample to 16 kHz single-channel audio. """
-    file_contents = tf.io.read_file(filename)
-    wav, sample_rate = tf.audio.decode_wav(
-          file_contents,
-          desired_channels=1)
-    wav = tf.squeeze(wav, axis=-1)
-    sample_rate = tf.cast(sample_rate, dtype=tf.int64)
-    wav = tfio.audio.resample(wav, rate_in=sample_rate, rate_out=16000)
-    return wav
+# YAMNet 모델 로드
+yamnet_model_handle = "https://tfhub.dev/google/yamnet/1"
+yamnet_model = hub.load(yamnet_model_handle)
 
-waveform = load_wav_16k_mono('/content/converted_audio.wav')
-my_classes = ['car_horn', 'engine', 'train']
-# testing_wav_data = load_wav_16k_mono('/content/converted_audio.wav')
+# 테스트할 오디오 파일 경로
+audio_file_path = '/home/rasp/venv/gist-aiot/code/output_channel_1.wav'
 
-reloaded_model = tf.saved_model.load('./yamnet_based')
+# 오디오 파일 로드 및 전처리
+def load_audio(file_path, sample_rate=16000):
+    # librosa로 오디오 파일 로드
+    audio_data, _ = librosa.load(file_path, sr=sample_rate)
+    return audio_data
 
-reloaded_results = reloaded_model(waveform)
-your_top_class = tf.math.argmax(reloaded_results)
-your_inferred_class = my_classes[your_top_class]
-class_probabilities = tf.nn.softmax(reloaded_results, axis=-1)
-your_top_score = class_probabilities[your_top_class]
-print(f'[Your model] The main sound is: {your_inferred_class} ({your_top_score})')
+audio_data = load_audio(audio_file_path)
+
+# YAMNet 모델로 예측 수행
+scores, embeddings, spectrogram = yamnet_model(audio_data)
+
+# 예측 결과에서 상위 클래스 확인
+class_map_path = yamnet_model.class_map_path().numpy().decode('utf-8')
+class_names = [name.decode('utf-8') for name in open(class_map_path).readlines()]
+top_class_index = tf.argmax(tf.reduce_mean(scores, axis=0)).numpy()
+print("Predicted class:", class_names[top_class_index].strip())
