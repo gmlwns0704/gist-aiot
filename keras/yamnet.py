@@ -2,11 +2,13 @@ from torch_vggish_yamnet import yamnet
 from torch_vggish_yamnet.input_proc import *
 import torch 
 
-model = yamnet.yamnet(pretrained=True)
-print(model)
-model.eval()
+embedding_yamnet = yamnet.yamnet(pretrained=True)
+
 audio=torch.randn(1,16000)
+converter = WaveformToInput(audio)
+in_tensor = converter(audio.float(), 16000)
+in_tensor.shape
 
 # 모델 예측
-with torch.no_grad():
-    predictions = model(audio) # 예측 결과 출력 print(predictions)
+emb_yamnet, _ = embedding_yamnet(in_tensor)  # discard logits
+print(emb_yamnet.shape)
