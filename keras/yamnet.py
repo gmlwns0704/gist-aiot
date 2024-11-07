@@ -6,6 +6,7 @@ import numpy as np
 # YAMNet 모델 로드
 yamnet_model_handle = "https://tfhub.dev/google/yamnet/1"
 yamnet_model = hub.load(yamnet_model_handle)
+tf.save_model.save(yamnet_model, './yam_model')
 
 # 테스트할 오디오 파일 경로
 audio_file_path = '/home/rasp/venv/gist-aiot/code/output_channel_1.wav'
