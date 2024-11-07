@@ -6,4 +6,6 @@ model = yamnet.yamnet(pretrained=True)
 model.eval()
 audio=torch.randn(1,16000)
 
-# 모델 예측 with torch.no_grad(): predictions = model(audio) # 예측 결과 출력 print(predictions)
+# 모델 예측
+with torch.no_grad():
+    predictions = model(audio) # 예측 결과 출력 print(predictions)
