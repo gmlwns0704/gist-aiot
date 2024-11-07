@@ -2,7 +2,7 @@ from torch_vggish_yamnet import yamnet
 from torch_vggish_yamnet.input_proc import *
 import torch 
 
-model = yamnet.Ymanet(pretrained=True)
+model = yamnet.ymanet(pretrained=True)
 model.eval()
 audio=torch.randn(1,16000)
 
