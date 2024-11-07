@@ -17,12 +17,14 @@ def load_audio(file_path, sample_rate=16000):
     return audio_data
 
 audio_data = load_audio(audio_file_path)
+print('audio loaded')
 
 # YAMNet 모델로 예측 수행
 scores, embeddings, spectrogram = yamnet_model(audio_data)
+print('start model')
 
 # 예측 결과에서 상위 클래스 확인
 class_map_path = yamnet_model.class_map_path().numpy().decode('utf-8')
-class_names = [name.decode('utf-8') for name in open(class_map_path).readlines()]
+class_names = [name.encode('utf-8') for name in open(class_map_path).readlines()]
 top_class_index = tf.argmax(tf.reduce_mean(scores, axis=0)).numpy()
 print("Predicted class:", class_names[top_class_index].strip())
