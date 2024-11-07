@@ -5,7 +5,7 @@ import torch
 embedding_yamnet = yamnet.yamnet(pretrained=True)
 
 audio=torch.randn(1,16000)
-converter = WaveformToInput(audio)
+converter = WaveformToInput()
 in_tensor = converter(audio.float(), 16000)
 in_tensor.shape
 
