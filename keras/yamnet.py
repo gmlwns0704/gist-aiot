@@ -11,4 +11,5 @@ in_tensor.shape
 
 # 모델 예측
 emb_yamnet, _ = embedding_yamnet(in_tensor)  # discard logits
+print(emb_yamnet)
 print(emb_yamnet.shape)
