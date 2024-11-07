@@ -3,6 +3,7 @@ from torch_vggish_yamnet.input_proc import *
 import torch 
 
 model = yamnet.yamnet(pretrained=True)
+print(model)
 model.eval()
 audio=torch.randn(1,16000)
 
