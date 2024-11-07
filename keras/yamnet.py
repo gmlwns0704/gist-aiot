@@ -1,35 +1,9 @@
-import tensorflow as tf
-# import tensorflow_hub as hub
-import librosa
-import numpy as np
+from torch_vggish_yamnet import yamnet
+from torch_vggish_yamnet.input_proc import *
+import torch 
 
-print('start')
-# YAMNet 모델 로드
-# yamnet_model_handle = "https://tfhub.dev/google/yamnet/1"
-# yamnet_model = hub.load(yamnet_model_handle)
-# tf.saved_model.save(yamnet_model, './yam_model')
+model = yamnet.Ymanet(pretrained=True)
+model.eval()
+audio=torch.randn(1,16000)
 
-yamnet_model = tf.saved_model.load('./yam_model')
-print('model loaded')
-
-# 테스트할 오디오 파일 경로
-audio_file_path = '/home/rasp/venv/gist-aiot/code/output_channel_1.wav'
-
-# 오디오 파일 로드 및 전처리
-def load_audio(file_path, sample_rate=16000):
-    # librosa로 오디오 파일 로드
-    audio_data, _ = librosa.load(file_path, sr=sample_rate)
-    return audio_data
-
-audio_data = load_audio(audio_file_path)
-print('audio loaded')
-
-# YAMNet 모델로 예측 수행
-scores, embeddings, spectrogram = yamnet_model(audio_data)
-print('start model')
-
-# 예측 결과에서 상위 클래스 확인
-class_map_path = yamnet_model.class_map_path().numpy().decode('utf-8')
-class_names = [name.encode('utf-8') for name in open(class_map_path).readlines()]
-top_class_index = tf.argmax(tf.reduce_mean(scores, axis=0)).numpy()
-print("Predicted class:", class_names[top_class_index].strip())
+# 모델 예측 with torch.no_grad(): predictions = model(audio) # 예측 결과 출력 print(predictions)
