@@ -8,7 +8,6 @@ import torch
 import threading
 #서로 sr이 다르면 통일해줘야함
 from scipy.signal import resample
-import concurrent.futures
 
 import waveform_analysis
 
@@ -74,6 +73,7 @@ class DOA_2D_listener():
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        # 0 준비안됨, 1준비됨, 2작동중, 3완료됨
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         self.multi_frames_angle = np.zeros([self.multi_frames_num])
         self.multi_frames_reult_class = np.zeros([self.multi_frames_num], dtype=np.int32)
@@ -136,13 +136,19 @@ class DOA_2D_listener():
     
     def threading_detect_callback(self, i):
         while True:
-            if self.multi_frames_check[i] == 1:
-                self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-                self.multi_frames_check[i]=2
+            self.events[i].wait()
+            self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
+            self.multi_frames_check[i]=3               
     
     def start_detect(self):
         print("detection started")
-        print('multithread started')
+        print('multithread ready')
+        self.events = []
+        self.threads = []
+        for _ in range(self.multi_frames_num): 
+            self.events.append(threading.Event())
+            self.threads.append(threading.Thread(target=self.threading_detect_callback, args=[i,]))
+        
         # executor = concurrent.futures.ThreadPoolExecutor()
         # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
         while True:
@@ -154,9 +160,9 @@ class DOA_2D_listener():
             if self.detected:
                 for i in range(self.multi_frames_num):
                     if self.multi_frames_check[i] == 1:
-                        self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-                        self.multi_frames_check[i]=2
-                if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
+                        self.multi_frames_check = 2
+                        self.events[i].set()
+                if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
                     print(self.multi_frames_angle)
                     print(self.multi_frames_reult_class)
