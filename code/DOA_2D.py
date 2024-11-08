@@ -512,7 +512,7 @@ class DOA_pra_listener(DOA_2D_listener):
         # print(input_test_frames)
         # if self.bt_class is not None:
         #     self.bt_buffer+='angle:'+str(360-int(h_angle[0]/np.pi*180.0))+'\n'
-        self.multi_frames_angle = 360-int(h_angle[0]/np.pi*180.0)
+        self.multi_frames_angle[i] = 360-int(h_angle[0]/np.pi*180.0)
         return super().detect_callback(input_test_frames, i)
 
 # class DOA_TDOA_listener(DOA_2D_listener):
