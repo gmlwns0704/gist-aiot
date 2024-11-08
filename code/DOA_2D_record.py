@@ -22,7 +22,7 @@ from scipy.signal import resample
 
 def read_stream():
     data = np.frombuffer(stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1,CHANNELS)
-    nr_data = nr.reduce_noise(data)
+    nr_data = nr.reduce_noise(y=data, sr=RATE)
     # data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
     # resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
     # # print(data)
