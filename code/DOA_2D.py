@@ -320,6 +320,8 @@ class DOA_pra_listener(DOA_2D_listener):
         self.dim3_sr=dim3_sr
         self.dim3_chunk=int(self.CHUNK*(self.dim3_sr/self.RATE))
         
+        print(self.multi_frames_check)
+        
         # self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         # self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         
