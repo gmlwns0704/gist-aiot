@@ -69,7 +69,7 @@ class DOA_2D_listener():
         
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
-        self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         
         print('setting mean volume')
