@@ -169,10 +169,19 @@ class DOA_2D_listener():
                         # print('start thread ['+str(i)+']')
                         self.events[i].set()
                     elif self.multi_frames_check[i] == 3:
-                        pass
                         # print(self.multi_frames_angle[i])
                         # print(self.multi_frames_reult_class[i])
                         # print(self.multi_frames_reult_value[i])
+                        if self.bt_class is not None:
+                            # print(self.multi_frames_angle[i])
+                            # print(self.multi_frames_reult_class[i])
+                            # print(self.multi_frames_reult_value[i])
+                            if self.multi_frames_reult_value[i] > self.estimate_rate:
+                                self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])
+                                self.bt_buffer += 'class:'+str(self.multi_frames_reult_value[i])
+                                self.bt_class.send(self.bt_buffer)
+                            else:
+                                self.bt_buffer=''
                 if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
                     print(self.multi_frames_angle)
