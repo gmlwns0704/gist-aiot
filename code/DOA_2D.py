@@ -143,7 +143,7 @@ class DOA_2D_listener():
         while True:
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-            print('thread callback done '+str(i))
+            # print('thread callback done '+str(i))
             self.multi_frames_check[i]=3
             self.events[i].clear()         
     
@@ -186,8 +186,8 @@ class DOA_2D_listener():
                     self.multi_frames_check[i] = 0
             
             time.sleep(0.1)
-            print(self.multi_frames_check)
-            print(self.multi_frames_range)
+            # print(self.multi_frames_check)
+            # print(self.multi_frames_range)
         return
     
     
@@ -224,7 +224,7 @@ class DOA_2D_listener():
         # 한바퀴 돌았음
         for j in range(self.multi_frames_num):
             if self.multi_frames_check[j] == 4 and self.multi_frames_range[j] == self.chunk_count:
-                print('thread '+str(j)+' record done')
+                # print('thread '+str(j)+' record done')
                 self.multi_frames[j,:self.chunk_count,:,0:5] = self.chunks[self.max_chunk_count-self.chunk_count:,:,0:5]
                 self.multi_frames[j,self.chunk_count:,:,0:5] = self.chunks[:self.max_chunk_count-self.chunk_count,:,0:5]
                 self.multi_frames_check[j] = 1
