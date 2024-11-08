@@ -13,11 +13,11 @@ def pre_progressing_file(filename, size=[32,32]):
     print('file loaded')
     
     # 이미지 ndarray
-    feat = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40, norm='ortho', n_fft=500, hop_length=250)
+    feat = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40, norm='ortho', n_fft=2048, hop_length=512)
     # 패딩된 ndarray
     print('mfcc done')
     # feat = padding(feat, 500)
-    feat = np.pad(feat, pad_width = ((0,0), (0,127)), mode = 'constant')
+    feat = np.pad(feat, pad_width = ((0,0), (0,1501)), mode = 'constant')
     np.save('./sample.npy',feat)
 
     # 해당 이미지 새로 저장
