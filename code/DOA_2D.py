@@ -159,6 +159,7 @@ class DOA_2D_listener():
                     self.bt_class.send('warn:tilt\n')
             if self.detected:
                 for i in range(self.multi_frames_num):
+                    print(self.multi_frames_check[i])
                     if self.multi_frames_check[i] == 1:
                         self.multi_frames_check[i] = 2
                         print('start thread ['+str(i)+']')
