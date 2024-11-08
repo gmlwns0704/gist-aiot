@@ -161,6 +161,7 @@ class DOA_2D_listener():
                 for i in range(self.multi_frames_num):
                     if self.multi_frames_check[i] == 1:
                         self.multi_frames_check[i] = 2
+                        print('start thread ['+str(i)+']')
                         self.events[i].set()
                 if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
