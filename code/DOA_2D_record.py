@@ -16,6 +16,8 @@ import usb.util
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
 
+import noisereduce as nr
+
 from scipy.signal import resample
 
 def read_stream():
