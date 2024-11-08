@@ -75,6 +75,8 @@ class DOA_2D_listener():
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         self.multi_frames_angle = np.zeros([self.multi_frames_num])
+        self.multi_frames_reult_class = np.zeros([self.multi_frames_num], dype=np.int32)
+        self.multi_frames_reult_value = np.zeros([self.multi_frames_num])
         print(self.multi_frames_num)
         print(self.multi_frames.shape)
         print(self.multi_frames_check)
@@ -145,10 +147,12 @@ class DOA_2D_listener():
                 # self.start_detect_callback = False
                 for i in range(self.multi_frames_num):
                     print('frame['+str(i)+'] started')
-                    print(self.detect_callback(self.multi_frames[i], i))
+                    self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
                     self.multi_frames_check[i]=0
                     #스레드로 추후 대체
                     print(self.multi_frames_angle)
+                    print(self.multi_frames_reult_class)
+                    print(self.multi_frames_reult_value)
                 
                 if np.sum(self.multi_frames_check) == 0:
                     self.detected = False
