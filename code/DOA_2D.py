@@ -208,21 +208,23 @@ class DOA_2D_listener():
         result = self.MODEL.test_by_feat(feat)
         
         estimated = np.exp(result.detach().numpy()[0,:])
-        print(estimated)
-        print(np.sum(estimated))
+        # print(estimated)
+        # print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
         # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
         
         if estimated_class not in ignore_class:
             if estimated[estimated_class] > self.estimate_rate:
                 if self.bt_class is not None:
-                    print('value: '+str(estimated[estimated_class]))
-                    print('class: '+str(estimated_class))
+                    pass
+                    # print('value: '+str(estimated[estimated_class]))
+                    # print('class: '+str(estimated_class))
                     # self.bt_buffer+='class:'+str(estimated_class)+'\n'
                     # self.bt_class.send(self.bt_buffer)
             else:
-                print('maybe nothing ('+str(estimated[estimated_class])+')')
-                print('class: '+str(estimated_class))
+                pass
+                # print('maybe nothing ('+str(estimated[estimated_class])+')')
+                # print('class: '+str(estimated_class))
                 # self.bt_buffer=''
         # print(self.angle)
         return estimated_class, estimated[estimated_class]
