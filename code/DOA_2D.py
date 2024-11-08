@@ -47,7 +47,7 @@ class DOA_2D_listener():
                  input_model=None,
                  bt_class=None,
                  estimate_rate=0.5,
-                 multi_frames_num=5):
+                 multi_frames_num=3):
         self.FORMAT = pyaudio.paInt16
         self.RESP_CHANNELS = 6
         self.RATE = sr
@@ -315,7 +315,7 @@ class DOA_pra_listener(DOA_2D_listener):
                  dim=2,
                  dim3_sr=48000,
                  estimate_rate=0.5,
-                 multi_frames_num=5):
+                 multi_frames_num=3):
         super().__init__(channels=channels,
                          sr=sr,
                          chunk=chunk,
