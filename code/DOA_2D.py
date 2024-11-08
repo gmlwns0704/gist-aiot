@@ -257,12 +257,16 @@ class DOA_2D_listener():
                 for i in range(self.multi_frames_num):
                     # i번째 멀티프레임을 위한 프레임 준비됨
                     if self.chunk_count > self.max_chunk_count*(1+(i/self.multi_frames_num)):
+                        print('multi frames ['+str(i)+'] ready')
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
                         self.multi_frames[i,:,:,:] = self.test_frames[self.max_chunk_count*(i/self.multi_frames_num):self.max_chunk_count*(1+(i/self.multi_frames_num)),:,:]
+                        print('done')
                 if (self.chunk_count >= 2*self.max_chunk_count):
                     self.chunk_count = 0
                     return in_data, pyaudio.paContinue
+        print('you must not see it')
+        return in_data, pyaudio.paContinue
     
     def stop(self):
         # 스트림 종료
