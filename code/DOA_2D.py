@@ -148,14 +148,15 @@ class DOA_2D_listener():
                 for i in range(self.multi_frames_num):
                     if self.multi_frames_check[i] == 1:# print('frame['+str(i)+'] started')
                         self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-                        self.multi_frames_check[i]=0
+                        self.multi_frames_check[i]=2
                         #스레드로 추후 대체
                 
-                if np.sum(self.multi_frames_check) == 0:
+                if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
                     self.detected = False
                     print(self.multi_frames_angle)
                     print(self.multi_frames_reult_class)
                     print(self.multi_frames_reult_value)
+                    self.multi_frames_check*=0
             
             time.sleep(0.1)
         return
