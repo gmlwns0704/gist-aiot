@@ -227,6 +227,8 @@ class DOA_2D_listener():
         
         #테스트 프레임으로도 읽음
         if self.detected:
+            print(self.test_frames[self.chunk_count,:,0:5].shape)
+            print(np_data[:,0:5].shape)
             self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
         #데이터 읽음
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
