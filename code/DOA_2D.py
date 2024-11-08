@@ -46,7 +46,8 @@ class DOA_2D_listener():
                  sound_pre_offset=0.3,
                  input_model=None,
                  bt_class=None,
-                 estimate_rate=0.5):
+                 estimate_rate=0.5,
+                 multi_frames_num=5):
         self.FORMAT = pyaudio.paInt16
         self.RESP_CHANNELS = 6
         self.RATE = sr
@@ -60,8 +61,12 @@ class DOA_2D_listener():
         self.start_detect_callback = False
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
-        self.test_frames = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        
+        self.multi_frames_num = multi_frames_num
+        self.multi_frames = np.zeros([self.mutli_frames_num, self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.multi_frames_check = np.zeros([self.multi_frames_num])
         
         self.mean_volume = 0
         
@@ -121,12 +126,20 @@ class DOA_2D_listener():
                 print('!!!machine tilted too much!!!')
                 if self.bt_class is not None:
                     self.bt_class.send('warn:tilt\n')
-            if self.start_detect_callback:
-                print('detected, start detect callback')
-                self.detect_callback(self.test_frames)
-                self.start_detect_callback = False
+            if self.detected:
+                # print('detected, start detect callback')
+                # self.detect_callback(self.test_frames)
+                # self.start_detect_callback = False
+                for i in range(self.multi_frames_num):
+                    print('frame['+str(i)+'] started')
+                    self.detect_callback(self.multi_frames[i])
+                    self.multi_frmaes_check[i]=0
+                    #스레드로 추후 대체
+                
+                if np.sum(self.multi_frames_check) == 0:
+                    self.detected = False
             
-            time.sleep(0.5)
+            time.sleep(0.1)
         return
     
     # def start_detect(self):
@@ -200,8 +213,10 @@ class DOA_2D_listener():
         # 녹음 후 청크 저장
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         
+        #테스트 프레임으로도 읽음
         if self.detected:
             self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
+        #데이터 읽음
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
         if not self.detected:
@@ -230,14 +245,18 @@ class DOA_2D_listener():
         
         # 루프사이클
         if (self.chunk_count >= self.max_chunk_count):
-            self.chunk_count = 0
-            # 감지가 되었고, 녹음이 끝남
-            if self.detected:
-                self.detected = False
-                self.start_detect_callback = True
-            return in_data, pyaudio.paContinue
-            
-        return in_data, pyaudio.paContinue
+            if not self.detected:
+                self.chunk_count = 0
+                return in_data, pyaudio.paContinue
+            else:
+                for i in range(self.multi_frames_num):
+                    # i번째 멀티프레임을 위한 프레임 준비됨
+                    if self.chunk_count > self.max_chunk_count*(1+(i/self.multi_frames_num)):
+                        self.multi_frames_check[i] = 1
+                        #해당 max_chunk_count만큼 가져옴
+                        self.multi_frames[i,:,:,:] = self.test_frames[max_chunk_count*(i/self.multi_frames_num):max_chunk_count*(1+(i/self.multi_frames_num)),:,:]
+                if (self.chunk_count >= 2*self.max_chunk_count):
+                    self.chunk_count = 0
     
     def stop(self):
         # 스트림 종료
