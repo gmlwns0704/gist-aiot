@@ -12,7 +12,7 @@ from scipy.signal import resample
 import waveform_analysis
 
 import pyroomacoustics as pra
-import noisereduce as nr
+# import noisereduce as nr
 
 from bt import bt_transmit
 
@@ -70,6 +70,8 @@ class DOA_2D_listener():
         print(self.chunks.shape)
         print(self.test_frames.shape)
         
+        self.filter = np.zeros((5, self.CHUNK), dtype=np.int16)
+        
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
@@ -88,6 +90,9 @@ class DOA_2D_listener():
         print('setting vt values')
         self.bt_class = bt_class
         self.bt_buffer = ''
+        
+        window_size = 5
+        self.window = np.ones(window_size)/window_size
         
         # PyAudio 객체 생성
         self.PYAUDIO_INSTANCE = pyaudio.PyAudio()
@@ -251,9 +256,8 @@ class DOA_2D_listener():
     def non_blocking_callback(self, in_data, frame_count, time_info, status):
         # 녹음 후 청크 저장
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
-        print('start reduce')
-        nr_data = nr.reduce_noise(y=np_data, sr=self.RATE)
-        print('reduce done')
+        # 이동평균필터 노이즈제거
+        np_data = np.convolve(np_data, self.window, mode='same')
         #테스트 프레임으로도 읽음
         if self.detected:
             self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
