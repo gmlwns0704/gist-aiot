@@ -167,7 +167,7 @@ class DOA_2D_listener():
                     print(self.multi_frames_angle)
                     print(self.multi_frames_reult_class)
                     print(self.multi_frames_reult_value)
-                    self.multi_frames_check*=0
+                    self.multi_frames_check.fill(0)
                 
             
             time.sleep(0.1)
