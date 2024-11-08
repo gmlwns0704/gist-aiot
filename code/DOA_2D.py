@@ -142,23 +142,21 @@ class DOA_2D_listener():
     
     def start_detect(self):
         print("detection started")
+        print('multithread started')
+        executor = concurrent.futures.ThreadPoolExecutor()
+        futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
         while True:
             x_rot, y_rot = gyro.get_angle()
             if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
                 print('!!!machine tilted too much!!!')
                 if self.bt_class is not None:
                     self.bt_class.send('warn:tilt\n')
-            if self.detected:
-                # 멀티스레딩으로?
-                print('start multithreading')
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    futures = futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
-                if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
-                    self.detected = False
-                    print(self.multi_frames_angle)
-                    print(self.multi_frames_reult_class)
-                    print(self.multi_frames_reult_value)
-                    self.multi_frames_check*=0
+            if self.detected and np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
+                self.detected = False
+                print(self.multi_frames_angle)
+                print(self.multi_frames_reult_class)
+                print(self.multi_frames_reult_value)
+                self.multi_frames_check*=0
                 
             
             time.sleep(0.1)
