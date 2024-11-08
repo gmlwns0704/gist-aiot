@@ -176,9 +176,9 @@ class DOA_2D_listener():
                     # print('start thread ['+str(i)+']')
                     self.events[i].set()
                 elif self.multi_frames_check[i] == 3:
-                    print(self.multi_frames_angle[i])
-                    print(self.multi_frames_reult_class[i])
-                    print(self.multi_frames_reult_value[i])
+                    # print(self.multi_frames_angle[i])
+                    # print(self.multi_frames_reult_class[i])
+                    # print(self.multi_frames_reult_value[i])
                     if self.bt_class is not None:
                         if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
                             self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
@@ -310,7 +310,7 @@ class DOA_pra_listener(DOA_2D_listener):
         self.dim3_sr=dim3_sr
         self.dim3_chunk=int(self.CHUNK*(self.dim3_sr/self.RATE))
         
-        print(self.multi_frames_check)
+        # print(self.multi_frames_check)
         
         # 1=1m, respeaker직경은 70mm=0.07m
         self.mic_positions = np.array([
