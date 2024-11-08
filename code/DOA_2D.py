@@ -173,9 +173,9 @@ class DOA_2D_listener():
                     # print('start thread ['+str(i)+']')
                     self.events[i].set()
                 elif self.multi_frames_check[i] == 3:
-                    print(self.multi_frames_angle[i])
-                    print(self.multi_frames_reult_class[i])
-                    print(self.multi_frames_reult_value[i])
+                    # print(self.multi_frames_angle[i])
+                    # print(self.multi_frames_reult_class[i])
+                    # print(self.multi_frames_reult_value[i])
                     if self.bt_class is not None:
                         if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
                             self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
@@ -236,7 +236,7 @@ class DOA_2D_listener():
         # print(str(volume)+'/'+str(self.mean_volume))
         # detected
         if volume>self.mean_volume*self.volume_gap_rate:
-            print('sound detected!')
+            # print('sound detected!')
             x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
             # 이용가능 스레드 탐색
             for j in range(self.multi_frames_num):
