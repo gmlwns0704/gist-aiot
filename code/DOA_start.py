@@ -13,7 +13,8 @@ listener = DOA_2D.DOA_pra_listener(
         volume_gap_rate=float(sys.argv[3]),
         bt_class=bt_class,
         estimate_rate=float(sys.argv[4]),
-        multi_frames_num=int(sys.argv[5])
+        multi_frames_num=int(sys.argv[5]),
+        chunk=int(sys.argv[6])
         )
 
 listener.start_detect()
