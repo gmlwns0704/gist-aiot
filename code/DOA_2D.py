@@ -155,7 +155,7 @@ class DOA_2D_listener():
         print('multithread ready')
         self.events = []
         self.threads = []
-        ignore_class = [2,3,9]
+        target_class = [1,8]
         for i in range(self.multi_frames_num): 
             self.events.append(threading.Event())
             self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
@@ -180,7 +180,7 @@ class DOA_2D_listener():
                     # print(self.multi_frames_reult_class[i])
                     # print(self.multi_frames_reult_value[i])
                     if self.bt_class is not None:
-                        if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
+                        if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] in target_class:
                             self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
                             self.bt_buffer += 'class:'+str(self.multi_frames_reult_class[i])+'\n'
                             print(self.bt_buffer)
