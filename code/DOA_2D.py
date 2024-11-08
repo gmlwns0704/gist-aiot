@@ -61,7 +61,7 @@ class DOA_2D_listener():
         self.start_detect_callback = False
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         
         self.multi_frames_num = multi_frames_num
