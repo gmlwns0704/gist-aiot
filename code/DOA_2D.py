@@ -181,12 +181,12 @@ class DOA_2D_listener():
         # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
         if estimated[estimated_class] > self.estimate_rate:
             if self.bt_class is not None:
-                print(estimated[estimated_class])
+                print('class: '+str(estimated[estimated_class]))
                 self.bt_buffer+='class:'+str(estimated_class)+'\n'
                 self.bt_class.send(self.bt_buffer)
         else:
             print('maybe nothing ('+str(estimated[estimated_class])+')')
-            print(estimated_class)
+            print('class: '+str(estimated_class))
             self.bt_buffer=''
         # print(self.angle)
         return
