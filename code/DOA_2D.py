@@ -238,6 +238,7 @@ class DOA_2D_listener():
             # 이용가능 스레드 탐색
             for j in range(self.multi_frames_num):
                 if self.multi_frames_check[j] == 0:
+                    print('found thread '+str(j))
                     if self.chunk_count >= x:
                         self.multi_frames_range[j] = self.chunk_count-x
                     else:
