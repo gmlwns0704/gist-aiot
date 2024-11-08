@@ -135,6 +135,7 @@ class DOA_2D_listener():
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
     
     def threading_detect_callback(self, i):
+        print('thread ['+str(i)+'] started')
         while True:
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
