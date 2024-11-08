@@ -138,6 +138,7 @@ class DOA_2D_listener():
         while True:
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
+            print('thread callbacl done')
             self.multi_frames_check[i]=3               
     
     def start_detect(self):
@@ -159,7 +160,7 @@ class DOA_2D_listener():
                     self.bt_class.send('warn:tilt\n')
             if self.detected:
                 for i in range(self.multi_frames_num):
-                    print(self.multi_frames_check[i])
+                    # print(self.multi_frames_check[i])
                     if self.multi_frames_check[i] == 1:
                         self.multi_frames_check[i] = 2
                         print('start thread ['+str(i)+']')
