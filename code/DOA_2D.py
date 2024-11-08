@@ -165,6 +165,8 @@ class DOA_2D_listener():
     #         i = (i+1)%frame_len
     
     def detect_callback(self, input_test_frames):
+        # ignore_class=[2,3,9]
+        ignore_class=[]
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
         # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
@@ -179,16 +181,18 @@ class DOA_2D_listener():
         print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
         # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
-        if estimated[estimated_class] > self.estimate_rate:
-            if self.bt_class is not None:
-                print('value: '+str(estimated[estimated_class]))
+        
+        if estimated_class in ignore_class:
+            if estimated[estimated_class] > self.estimate_rate:
+                if self.bt_class is not None:
+                    print('value: '+str(estimated[estimated_class]))
+                    print('class: '+str(estimated_class))
+                    self.bt_buffer+='class:'+str(estimated_class)+'\n'
+                    self.bt_class.send(self.bt_buffer)
+            else:
+                print('maybe nothing ('+str(estimated[estimated_class])+')')
                 print('class: '+str(estimated_class))
-                self.bt_buffer+='class:'+str(estimated_class)+'\n'
-                self.bt_class.send(self.bt_buffer)
-        else:
-            print('maybe nothing ('+str(estimated[estimated_class])+')')
-            print('class: '+str(estimated_class))
-            self.bt_buffer=''
+                self.bt_buffer=''
         # print(self.angle)
         return
     
