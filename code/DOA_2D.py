@@ -65,7 +65,7 @@ class DOA_2D_listener():
         self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         
         self.multi_frames_num = multi_frames_num
-        self.multi_frames = np.zeros([self.mutli_frames_num, self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         self.multi_frames_check = np.zeros([self.multi_frames_num])
         
         self.mean_volume = 0
