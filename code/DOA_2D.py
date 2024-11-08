@@ -194,7 +194,7 @@ class DOA_2D_listener():
         # print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
         end_time = time.time()
-        print('time: '+str(start_time-end_time))
+        print('time spent: '+str(start_time-end_time))
     
         # print(self.angle)
         return estimated_class, estimated[estimated_class]
