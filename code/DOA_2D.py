@@ -257,7 +257,8 @@ class DOA_2D_listener():
         # 녹음 후 청크 저장
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         # 이동평균필터 노이즈제거
-        np_data = np.convolve(np_data, self.window, mode='same')
+        for i in range(5):
+            np_data[:,i] = np.convolve(np_data[:,i], self.window, mode='same')
         #테스트 프레임으로도 읽음
         if self.detected:
             self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
