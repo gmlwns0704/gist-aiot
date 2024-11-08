@@ -33,7 +33,7 @@ def pre_progressing(y, sr, size=[32,32]):
     y_float = librosa.util.buf_to_float(y)
     feat = librosa.feature.mfcc(y=y_float, sr=sr, n_mfcc=40, norm='ortho', n_fft=500, hop_length=250)
     # 패딩된 ndarray
-    print('mfcc done')
+    # print('mfcc done')
     # feat = padding(feat, 500)
     feat = np.pad(feat, pad_width = ((0,0), (0,127)), mode = 'constant')
     # numpy데이터를 직접쓰는 모델로 수정예정

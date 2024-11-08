@@ -146,7 +146,7 @@ class DOA_2D_listener():
                 # self.detect_callback(self.test_frames)
                 # self.start_detect_callback = False
                 for i in range(self.multi_frames_num):
-                    print('frame['+str(i)+'] started')
+                    # print('frame['+str(i)+'] started')
                     self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
                     self.multi_frames_check[i]=0
                     #스레드로 추후 대체
