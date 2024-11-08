@@ -186,6 +186,7 @@ class DOA_2D_listener():
                     self.multi_frames_check[i] = 0
             
             time.sleep(0.1)
+            print(self.multi_frames_check)
         return
     
     
