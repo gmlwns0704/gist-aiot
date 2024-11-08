@@ -8,7 +8,7 @@ from bt import bt_transmit
 bt_class = bt_transmit.bt_communicate()
 
 listener = DOA_2D.DOA_pra_listener(
-        record_seconds=int(sys.argv[1]),
+        record_seconds=float(sys.argv[1]),
         sound_pre_offset=float(sys.argv[2]),
         volume_gap_rate=float(sys.argv[3]),
         bt_class=bt_class,

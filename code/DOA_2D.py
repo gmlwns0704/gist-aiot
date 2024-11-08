@@ -135,7 +135,7 @@ class DOA_2D_listener():
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
     
     def threading_detect_callback(self, i):
-        print('thread ['+str(i)+'] started')
+        # print('thread ['+str(i)+'] started')
         while True:
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
@@ -215,7 +215,7 @@ class DOA_2D_listener():
     #         i = (i+1)%frame_len
     
     def detect_callback(self, input_test_frames, i):
-        print('detect callback called')
+        # print('detect callback called')
         # ignore_class=[2,3,9]
         ignore_class=[]
         #실수화(librosa는 실수값으로 작동)
