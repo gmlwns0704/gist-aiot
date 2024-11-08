@@ -251,7 +251,7 @@ class DOA_2D_listener():
                         else:
                             self.multi_frames_range[j] = self.max_chunk_count-x+self.chunk_count
                         # 녹음중 표시
-                        self.record_delay = 3
+                        self.record_delay = int(0.2*self.max_chunk_count)
                         self.multi_frames_check[j] = 4
                         break
         else:
