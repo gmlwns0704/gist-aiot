@@ -134,21 +134,12 @@ class DOA_2D_listener():
         data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
     
-    def threading_detect_callback(self):
-        i = 0
+    def threading_detect_callback(self, i):
         while True:
-            if self.multi_frames_check[i] == 1:# print('frame['+str(i)+'] started')
+            if self.multi_frames_check[i] == 1:
                         self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
                         self.multi_frames_check[i]=2
-            i += 1
-            if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
-                    break
-            if i >= self.multi_frames_num:
-                i = 0
-        print(self.multi_frames_angle)
-        print(self.multi_frames_reult_class)
-        print(self.multi_frames_reult_value)
-        self.multi_frames_check*=0
+                        break
     
     def start_detect(self):
         print("detection started")
@@ -161,8 +152,12 @@ class DOA_2D_listener():
             if self.detected:
                 # 멀티스레딩으로?
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                    results = list(executor.map(self.threading_detect_callback))
+                    results = list(executor.map(self.threading_detect_callback, range(self.multi_frames_num)))
                 self.detected = False
+                print(self.multi_frames_angle)
+                print(self.multi_frames_reult_class)
+                print(self.multi_frames_reult_value)
+                self.multi_frames_check*=0
                 
             
             time.sleep(0.1)
