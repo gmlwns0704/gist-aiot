@@ -25,7 +25,7 @@ import usb.util
 
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
-import gyro
+# import gyro
 
 # mfcc를 위해 실수형으로 교체
 # https://www.kaggle.com/discussions/general/213391
@@ -156,7 +156,7 @@ class DOA_2D_listener():
         # executor = concurrent.futures.ThreadPoolExecutor()
         # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
         while True:
-            x_rot, y_rot = gyro.get_angle()
+            # x_rot, y_rot = gyro.get_angle()
             if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
                 print('!!!machine tilted too much!!!')
                 if self.bt_class is not None:
