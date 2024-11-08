@@ -66,11 +66,17 @@ class DOA_2D_listener():
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        print(self.max_chunk_count)
+        print(self.chunks.shape)
+        print(self.test_frames.shape)
         
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
+        print(self.multi_frames_num)
+        print(self.multi_frames.shape)
+        print(self.multi_frames_check)
         
         print('setting mean volume')
         self.mean_volume = 0
