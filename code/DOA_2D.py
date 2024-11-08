@@ -61,18 +61,19 @@ class DOA_2D_listener():
         self.detected = False
         self.start_detect_callback = False
         
-        print('setting chunks values')
-        self.chunk_count = 0
-        self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
-        self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
-        print(self.max_chunk_count)
-        print(self.chunks.shape)
-        print(self.test_frames.shape)
-        
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        
+        print('setting chunks values')
+        self.chunk_count = 0
+        self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
+        self.chunks = np.zeros([self.max_chunk_count*self.multi_frames_num, self.CHUNK, 5], dtype=np.int16)
+        self.test_frames = np.zeros([self.max_chunk_count*self.multi_frames_num, self.CHUNK, 5], dtype=np.int16)
+        print(self.max_chunk_count)
+        print(self.chunks.shape)
+        print(self.test_frames.shape)
+    
         # 0 준비안됨, 1준비됨, 2작동중, 3완료됨
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         self.multi_frames_angle = np.zeros([self.multi_frames_num])
@@ -289,15 +290,25 @@ class DOA_2D_listener():
                 self.chunk_count = 0
                 return in_data, pyaudio.paContinue
             else:
+                # for i in range(self.multi_frames_num):
+                #     mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
+                #     # i번째 멀티프레임을 위한 프레임 준비됨
+                #     if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
+                #         # print('multi frames ['+str(i)+'] ready')
+                #         self.multi_frames_check[i] = 1
+                #         #해당 max_chunk_count만큼 가져옴
+                #         self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
+                # if (self.chunk_count >= 2*self.max_chunk_count):
+                #     self.chunk_count = 0
                 for i in range(self.multi_frames_num):
-                    mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
+                    mf_offset = int(self.max_chunk_count*i)
                     # i번째 멀티프레임을 위한 프레임 준비됨
                     if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
                         # print('multi frames ['+str(i)+'] ready')
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
                         self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
-                if (self.chunk_count >= 2*self.max_chunk_count):
+                if (self.chunk_count >= self.multi_frames_num*self.max_chunk_count):
                     self.chunk_count = 0
                 return in_data, pyaudio.paContinue
         return in_data, pyaudio.paContinue
