@@ -148,6 +148,7 @@ class DOA_2D_listener():
         print('multithread ready')
         self.events = []
         self.threads = []
+        ignore_class = [2,3,9]
         for i in range(self.multi_frames_num): 
             self.events.append(threading.Event())
             self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
@@ -231,8 +232,6 @@ class DOA_2D_listener():
     
     def detect_callback(self, input_test_frames, i):
         # print('detect callback called')
-        # ignore_class=[2,3,9]
-        ignore_class=[2,3,9]
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
         # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
@@ -247,20 +246,7 @@ class DOA_2D_listener():
         # print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
         # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
-        
-        if estimated_class not in ignore_class:
-            if estimated[estimated_class] > self.estimate_rate:
-                if self.bt_class is not None:
-                    pass
-                    # print('value: '+str(estimated[estimated_class]))
-                    # print('class: '+str(estimated_class))
-                    # self.bt_buffer+='class:'+str(estimated_class)+'\n'
-                    # self.bt_class.send(self.bt_buffer)
-            else:
-                pass
-                # print('maybe nothing ('+str(estimated[estimated_class])+')')
-                # print('class: '+str(estimated_class))
-                # self.bt_buffer=''
+    
         # print(self.angle)
         return estimated_class, estimated[estimated_class]
     
