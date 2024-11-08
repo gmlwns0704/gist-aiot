@@ -247,6 +247,7 @@ class DOA_2D_listener():
             # print(str(volume)+'/'+str(self.mean_volume))
             # detected
             if volume>self.mean_volume*self.volume_gap_rate:
+                print('sound detected!')
                 # chunks에서 이전 값들 test_frames 로 옮김
                 x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
                 i=self.chunk_count
