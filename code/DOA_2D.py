@@ -170,7 +170,7 @@ class DOA_2D_listener():
                 # print(self.multi_frames_check[i])
                 if self.multi_frames_check[i] == 1:
                     self.multi_frames_check[i] = 2
-                    # print('start thread ['+str(i)+']')
+                    print('start thread ['+str(i)+']')
                     self.events[i].set()
                 elif self.multi_frames_check[i] == 3:
                     # print(self.multi_frames_angle[i])
