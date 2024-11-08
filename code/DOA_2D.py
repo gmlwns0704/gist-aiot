@@ -233,18 +233,14 @@ class DOA_2D_listener():
             # print(str(volume)+'/'+str(self.mean_volume))
             # detected
             if volume>self.mean_volume*self.volume_gap_rate:
-                print('loud sound detected')
                 # chunks에서 이전 값들 test_frames 로 옮김
                 x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
                 i=self.chunk_count
                 if i>x:
-                    print('simpy copy presound')
                     self.test_frames[:x]=self.chunks[i-x:i]
                 else:
-                    print('complexly copy presound')
                     self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
                     self.test_frames[x-i:x]=self.chunks[:i]
-                print('copy presound done')
                 self.detected = True
                 # x부터 다음 청크 쓰기 시작
                 self.chunk_count=x
@@ -266,6 +262,7 @@ class DOA_2D_listener():
                         self.multi_frames[i,:,:,:] = self.test_frames[self.max_chunk_count*(i/self.multi_frames_num):self.max_chunk_count*(1+(i/self.multi_frames_num)),:,:]
                 if (self.chunk_count >= 2*self.max_chunk_count):
                     self.chunk_count = 0
+                    return in_data, pyaudio.paContinue
     
     def stop(self):
         # 스트림 종료
