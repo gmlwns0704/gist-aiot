@@ -158,6 +158,7 @@ class DOA_2D_listener():
                 if self.bt_class is not None:
                     self.bt_class.send('warn:tilt\n')
             if self.detected:
+                print(self.multi_frames_check)
                 for i in range(self.multi_frames_num):
                     if self.multi_frames_check[i] == 1:
                         self.multi_frames_check = 2
