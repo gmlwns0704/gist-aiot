@@ -64,8 +64,7 @@ class DOA_2D_listener():
         print('setting chunks values')
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
-        self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
+        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         print(self.max_chunk_count)
         print(self.chunks.shape)
         print(self.test_frames.shape)
@@ -75,11 +74,12 @@ class DOA_2D_listener():
         print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
-        # 0 준비안됨, 1준비됨, 2작동중, 3완료됨
+        # 0 준비안됨, 1준비됨, 2작동중, 3완료됨, 4녹음중
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         self.multi_frames_angle = np.zeros([self.multi_frames_num])
         self.multi_frames_reult_class = np.zeros([self.multi_frames_num], dtype=np.int32)
         self.multi_frames_reult_value = np.zeros([self.multi_frames_num])
+        self.multi_frames_range = np.zeros([self.multi_frames_num],dtype=np.int32)
         print(self.multi_frames_num)
         print(self.multi_frames.shape)
         print(self.multi_frames_check)
@@ -167,32 +167,30 @@ class DOA_2D_listener():
             #     print('!!!machine tilted too much!!!')
             #     if self.bt_class is not None:
             #         self.bt_class.send('warn:tilt\n')
-            if self.detected:
-                for i in range(self.multi_frames_num):
-                    # print(self.multi_frames_check[i])
-                    if self.multi_frames_check[i] == 1:
-                        self.multi_frames_check[i] = 2
-                        # print('start thread ['+str(i)+']')
-                        self.events[i].set()
-                    elif self.multi_frames_check[i] == 3:
-                        # print(self.multi_frames_angle[i])
-                        # print(self.multi_frames_reult_class[i])
-                        # print(self.multi_frames_reult_value[i])
-                        if self.bt_class is not None:
-                            if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
-                                self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
-                                self.bt_buffer += 'class:'+str(self.multi_frames_reult_class[i])+'\n'
-                                print(self.bt_buffer)
-                                self.bt_class.send(self.bt_buffer)
-                                self.bt_buffer=''
-        
-                if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
-                    self.detected = False
-                    # print(self.multi_frames_angle)
-                    # print(np.mean(self.multi_frames_angle))
-                    # print(self.multi_frames_reult_class)
-                    # print(self.multi_frames_reult_value)
-                    self.multi_frames_check.fill(0)
+            for i in range(self.multi_frames_num):
+                # print(self.multi_frames_check[i])
+                if self.multi_frames_check[i] == 1:
+                    self.multi_frames_check[i] = 2
+                    # print('start thread ['+str(i)+']')
+                    self.events[i].set()
+                elif self.multi_frames_check[i] == 3:
+                    # print(self.multi_frames_angle[i])
+                    # print(self.multi_frames_reult_class[i])
+                    # print(self.multi_frames_reult_value[i])
+                    if self.bt_class is not None:
+                        if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
+                            self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
+                            self.bt_buffer += 'class:'+str(self.multi_frames_reult_class[i])+'\n'
+                            print(self.bt_buffer)
+                            self.bt_class.send(self.bt_buffer)
+                            self.bt_buffer=''
+            if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
+                self.detected = False
+                # print(self.multi_frames_angle)
+                # print(np.mean(self.multi_frames_angle))
+                # print(self.multi_frames_reult_class)
+                # print(self.multi_frames_reult_value)
+                self.multi_frames_check.fill(0)
                 
             
             time.sleep(0.1)
@@ -260,53 +258,57 @@ class DOA_2D_listener():
         np_data = raw_np_data.copy()
         for i in [1,2,3,4]:
             np_data[:,i] = np.convolve(raw_np_data[:,i], self.window, mode='same')
-        #테스트 프레임으로도 읽음
-        if self.detected:
-            self.test_frames[self.chunk_count,:,0:5] = np_data[:,0:5]
         #데이터 읽음
         self.chunks[self.chunk_count,:,0:5] = np_data[:,0:5]
         
-        if not self.detected:
-            # weighted= waveform_analysis.A_weight(np_data, self.RATE)
-            # volume=audioop.rms(weighted.flatten(),2)
-            volume=audioop.rms(np_data[1].flatten(),2)
-            self.mean_volume += (volume-self.mean_volume)*0.1
-            # print(str(volume)+'/'+str(self.mean_volume))
-            # detected
-            if volume>self.mean_volume*self.volume_gap_rate:
-                print('sound detected!')
-                # chunks에서 이전 값들 test_frames 로 옮김
-                x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
-                i=self.chunk_count
-                if i>x:
-                    self.test_frames[:x]=self.chunks[i-x:i]
-                else:
-                    self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):self.max_chunk_count]
-                    self.test_frames[x-i:x]=self.chunks[:i]
-                self.detected = True
-                # x부터 다음 청크 쓰기 시작
-                self.chunk_count=x
-                
-        # 감지되었다면 test_frames도 같이 업데이트
+        # 한바퀴 돌았음
+        for j in range(self.multi_frames_num):
+            if self.multi_frames_check[j] == 4 and self.multi_frames_range[j] == self.chunk_count:
+                self.multi_frames[j,:self.chunk_count,:,0:5] = self.chunks[self.max_chunk_count-self.chunk_count:,:,0:5]
+                self.multi_frames[j,self.chunk_count:,:,0:5] = self.chunks[:self.max_chunk_count-self.chunk_count,:,0:5]
+                self.multi_frames_check[j] = 1
+        
+        # weighted= waveform_analysis.A_weight(np_data, self.RATE)
+        # volume=audioop.rms(weighted.flatten(),2)
+        volume=audioop.rms(np_data[1].flatten(),2)
+        self.mean_volume += (volume-self.mean_volume)*0.1
+        # print(str(volume)+'/'+str(self.mean_volume))
+        # detected
+        if volume>self.mean_volume*self.volume_gap_rate:
+            print('sound detected!')
+            x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
+            # 이용가능 스레드 탐색
+            for j in range(self.multi_frames_num):
+                if self.multi_frames_check[j] == 0:
+                    if self.chunk_count >= x:
+                        self.multi_frames_range[j] = self.chunk_count-x
+                    else:
+                        self.multi_frames_range[j] = self.max_chunk_count-x+i
+                    # 녹음중 표시
+                    self.multi_frames_check[j] = 4
+                    break
+        # 루프
         self.chunk_count += 1
+        if self.chunk_count >= self.max_chunk_count:
+            self.chunk_count = 0
         
         # 루프사이클
-        if (self.chunk_count >= self.max_chunk_count):
-            if not self.detected:
-                self.chunk_count = 0
-                return in_data, pyaudio.paContinue
-            else:
-                for i in range(self.multi_frames_num):
-                    mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
-                    # i번째 멀티프레임을 위한 프레임 준비됨
-                    if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
-                        # print('multi frames ['+str(i)+'] ready')
-                        self.multi_frames_check[i] = 1
-                        #해당 max_chunk_count만큼 가져옴
-                        self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
-                if (self.chunk_count >= 2*self.max_chunk_count):
-                    self.chunk_count = 0
-                return in_data, pyaudio.paContinue
+        # if (self.chunk_count >= self.max_chunk_count):
+        #     if not self.detected:
+        #         self.chunk_count = 0
+        #         return in_data, pyaudio.paContinue
+        #     else:
+        #         for i in range(self.multi_frames_num):
+        #             mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
+        #             # i번째 멀티프레임을 위한 프레임 준비됨
+        #             if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
+        #                 # print('multi frames ['+str(i)+'] ready')
+        #                 self.multi_frames_check[i] = 1
+        #                 #해당 max_chunk_count만큼 가져옴
+        #                 self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
+        #         if (self.chunk_count >= 2*self.max_chunk_count):
+        #             self.chunk_count = 0
+        #         return in_data, pyaudio.paContinue
         return in_data, pyaudio.paContinue
     
     def stop(self):
