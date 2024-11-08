@@ -147,7 +147,7 @@ class DOA_2D_listener():
         self.threads = []
         for _ in range(self.multi_frames_num): 
             self.events.append(threading.Event())
-            self.threads.append(threading.Thread(target=self.threading_detect_callback, args=[i,]))
+            self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
         
         # executor = concurrent.futures.ThreadPoolExecutor()
         # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
