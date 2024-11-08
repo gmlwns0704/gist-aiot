@@ -184,7 +184,6 @@ class DOA_2D_listener():
     
     def detect_callback(self, input_test_frames, i):
         # print('detect callback called')
-        start_time = time.time()
         input_test_frames_ch0 = input_test_frames[:,:,0].copy()
         feat = mfcc.pre_progressing(input_test_frames_ch0, self.RATE)
         result = self.MODEL.test_by_feat(feat)
@@ -193,8 +192,6 @@ class DOA_2D_listener():
         # print(estimated)
         # print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
-        end_time = time.time()
-        print('time spent: '+str(start_time-end_time))
     
         # print(self.angle)
         return estimated_class, estimated[estimated_class]
