@@ -145,7 +145,7 @@ class DOA_2D_listener():
                 for i in range(self.multi_frames_num):
                     print('frame['+str(i)+'] started')
                     self.detect_callback(self.multi_frames[i])
-                    self.multi_frmaes_check[i]=0
+                    self.multi_frames_check[i]=0
                     #스레드로 추후 대체
                 
                 if np.sum(self.multi_frames_check) == 0:
