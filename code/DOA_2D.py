@@ -168,6 +168,10 @@ class DOA_2D_listener():
                         self.multi_frames_check[i] = 2
                         # print('start thread ['+str(i)+']')
                         self.events[i].set()
+                    elif self.multi_frames_check[i] == 3:
+                        print(self.multi_frames_angle[i])
+                        print(self.multi_frames_reult_class[i])
+                        print(self.multi_frames_reult_value[i])
                 if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
                     print(self.multi_frames_angle)
