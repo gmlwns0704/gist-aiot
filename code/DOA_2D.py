@@ -263,7 +263,7 @@ class DOA_2D_listener():
                     if self.chunk_count > self.max_chunk_count*(1+(i/self.multi_frames_num)):
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
-                        self.multi_frames[i,:,:,:] = self.test_frames[max_chunk_count*(i/self.multi_frames_num):max_chunk_count*(1+(i/self.multi_frames_num)),:,:]
+                        self.multi_frames[i,:,:,:] = self.test_frames[self.max_chunk_count*(i/self.multi_frames_num):self.max_chunk_count*(1+(i/self.multi_frames_num)),:,:]
                 if (self.chunk_count >= 2*self.max_chunk_count):
                     self.chunk_count = 0
     
