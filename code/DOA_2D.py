@@ -250,6 +250,7 @@ class DOA_2D_listener():
     
     def non_blocking_callback(self, in_data, frame_count, time_info, status):
         # 녹음 후 청크 저장
+        nr_data = nr.reduce_noise(y=in_data, sr=self.RATE)
         np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         
         #테스트 프레임으로도 읽음
