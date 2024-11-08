@@ -143,7 +143,7 @@ class DOA_2D_listener():
         while True:
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-            # print('thread callback done '+str(i))
+            print('thread callback done '+str(i))
             self.multi_frames_check[i]=3
             self.events[i].clear()         
     
