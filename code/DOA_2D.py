@@ -164,9 +164,9 @@ class DOA_2D_listener():
                     # print('start thread ['+str(i)+']')
                     self.events[i].set()
                 elif self.multi_frames_check[i] == 3:
-                    # print(self.multi_frames_angle[i])
-                    # print(self.multi_frames_reult_class[i])
-                    # print(self.multi_frames_reult_value[i])
+                    print(self.multi_frames_angle[i])
+                    print(self.multi_frames_reult_class[i])
+                    print(self.multi_frames_reult_value[i])
                     if self.bt_class is not None:
                         if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] in target_class:
                             self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
