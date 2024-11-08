@@ -21,14 +21,14 @@ import noisereduce as nr
 from scipy.signal import resample
 
 def read_stream():
-    nr_data = nr.reduce_noise(y=stream.read(CHUNK, exception_on_overflow=False), sr=RATE)
-    data = np.frombuffer(nr_data, dtype=np.int16).reshape(-1,CHANNELS)
+    data = np.frombuffer(stream.read(CHUNK, exception_on_overflow=False), dtype=np.int16).reshape(-1,CHANNELS)
+    nr_data = nr.reduce_noise(data)
     # data_3d = np.frombuffer(stream2.read(CHUNK*3, exception_on_overflow=False), dtype=np.int16)
     # resampled_data_3d = resample(data_3d, CHUNK).reshape(-1,1).astype(np.int16)
     # # print(data)
     # print(data_3d)
     # print(resampled_data_3d)
-    return data
+    return nr_data
 
 # 설정
 FORMAT = pyaudio.paInt16
