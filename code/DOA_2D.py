@@ -64,7 +64,7 @@ class DOA_2D_listener():
         print('setting chunks values')
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
-        self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
+        self.chunks = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         
         print('setting multi frames')
@@ -239,7 +239,7 @@ class DOA_2D_listener():
                 if i>x:
                     self.test_frames[:x]=self.chunks[i-x:i]
                 else:
-                    self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
+                    self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):self.max_chunk_count]
                     self.test_frames[x-i:x]=self.chunks[:i]
                 self.detected = True
                 # x부터 다음 청크 쓰기 시작
