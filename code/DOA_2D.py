@@ -187,6 +187,7 @@ class DOA_2D_listener():
             
             time.sleep(0.1)
             print(self.multi_frames_check)
+            print(self.multi_frames_range)
         return
     
     
@@ -244,7 +245,7 @@ class DOA_2D_listener():
                     if self.chunk_count >= x:
                         self.multi_frames_range[j] = self.chunk_count-x
                     else:
-                        self.multi_frames_range[j] = self.max_chunk_count-x+i
+                        self.multi_frames_range[j] = self.max_chunk_count-x+self.chunk_count
                     # 녹음중 표시
                     self.multi_frames_check[j] = 4
                     break
