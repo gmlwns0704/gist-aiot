@@ -86,6 +86,9 @@ class DOA_2D_listener():
         print('setting mean volume')
         self.mean_volume = 0
         
+        # 소리 녹음 시작이후 최소딜레이
+        self.record_delay = 0
+        
         print('setting vt values')
         self.bt_class = bt_class
         self.bt_buffer = ''
@@ -235,20 +238,24 @@ class DOA_2D_listener():
         self.mean_volume += (volume-self.mean_volume)*0.1
         # print(str(volume)+'/'+str(self.mean_volume))
         # detected
-        if volume>self.mean_volume*self.volume_gap_rate:
-            # print('sound detected!')
-            x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
-            # 이용가능 스레드 탐색
-            for j in range(self.multi_frames_num):
-                if self.multi_frames_check[j] == 0:
-                    # print('found thread '+str(j))
-                    if self.chunk_count >= x:
-                        self.multi_frames_range[j] = self.chunk_count-x
-                    else:
-                        self.multi_frames_range[j] = self.max_chunk_count-x+self.chunk_count
-                    # 녹음중 표시
-                    self.multi_frames_check[j] = 4
-                    break
+        if self.record_delay <= 0:
+            if volume>self.mean_volume*self.volume_gap_rate:
+                # print('sound detected!')
+                x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
+                # 이용가능 스레드 탐색
+                for j in range(self.multi_frames_num):
+                    if self.multi_frames_check[j] == 0:
+                        # print('found thread '+str(j))
+                        if self.chunk_count >= x:
+                            self.multi_frames_range[j] = self.chunk_count-x
+                        else:
+                            self.multi_frames_range[j] = self.max_chunk_count-x+self.chunk_count
+                        # 녹음중 표시
+                        self.record_delay = 3
+                        self.multi_frames_check[j] = 4
+                        break
+        else:
+            self.record_delay -= 1
         # 루프
         self.chunk_count += 1
         if self.chunk_count >= self.max_chunk_count:
