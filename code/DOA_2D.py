@@ -303,7 +303,8 @@ class DOA_pra_listener(DOA_2D_listener):
                  mic_positions=None,
                  dim=2,
                  dim3_sr=48000,
-                 estimate_rate=0.5):
+                 estimate_rate=0.5,
+                 multi_frames_num=5):
         super().__init__(channels=channels,
                          sr=sr,
                          chunk=chunk,
@@ -312,7 +313,8 @@ class DOA_pra_listener(DOA_2D_listener):
                          sound_pre_offset=sound_pre_offset,
                          input_model=input_model,
                          bt_class=bt_class,
-                         estimate_rate=estimate_rate)
+                         estimate_rate=estimate_rate,
+                         multi_frames_num=multi_frames_num)
         self.nfft=nfft
         self.dim=dim
         self.dim3_sr=dim3_sr
