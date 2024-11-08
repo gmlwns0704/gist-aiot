@@ -8,6 +8,7 @@ import torch
 import threading
 #서로 sr이 다르면 통일해줘야함
 from scipy.signal import resample
+import concurrent.futures
 
 import waveform_analysis
 
@@ -133,6 +134,22 @@ class DOA_2D_listener():
         data = self.STREAM.read(self.CHUNK, exception_on_overflow=False)
         return np.frombuffer(data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
     
+    def threading_detect_callback(self):
+        i = 0
+        while True:
+            if self.multi_frames_check[i] == 1:# print('frame['+str(i)+'] started')
+                        self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
+                        self.multi_frames_check[i]=2
+            i += 1
+            if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
+                    break
+            if i >= self.multi_frames_num:
+                i = 0
+        print(self.multi_frames_angle)
+        print(self.multi_frames_reult_class)
+        print(self.multi_frames_reult_value)
+        self.multi_frames_check*=0
+    
     def start_detect(self):
         print("detection started")
         while True:
@@ -142,21 +159,11 @@ class DOA_2D_listener():
                 if self.bt_class is not None:
                     self.bt_class.send('warn:tilt\n')
             if self.detected:
-                # print('detected, start detect callback')
-                # self.detect_callback(self.test_frames)
-                # self.start_detect_callback = False
-                for i in range(self.multi_frames_num):
-                    if self.multi_frames_check[i] == 1:# print('frame['+str(i)+'] started')
-                        self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-                        self.multi_frames_check[i]=2
-                        #스레드로 추후 대체
+                # 멀티스레딩으로?
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    results = list(executor.map(self.threading_detect_callback))
+                self.detected = False
                 
-                if np.sum(self.multi_frames_check) == 2*self.multi_frames_num:
-                    self.detected = False
-                    print(self.multi_frames_angle)
-                    print(self.multi_frames_reult_class)
-                    print(self.multi_frames_reult_value)
-                    self.multi_frames_check*=0
             
             time.sleep(0.1)
         return
