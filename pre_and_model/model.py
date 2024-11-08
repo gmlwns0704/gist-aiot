@@ -112,10 +112,10 @@ class Rasp_Model():
     def test_from_image(self):
         data = np.load('./sample.npy')
         print(data.shape)
-        print('image load done')
+        print('np load done')
         # 이미지를 텐서로 변환
-        input_tensor = torch.Tensor(data).unsqueeze(0).unsqueeze(0)
-        print(input_tensor.shape)
+        # input_tensor = torch.Tensor(data).unsqueeze(0).unsqueeze(0)
+        # print(input_tensor.shape)
         # print('transform done')
         self.model.eval()
-        return self.model(input_tensor)
+        return self.model(data)
