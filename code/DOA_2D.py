@@ -74,6 +74,7 @@ class DOA_2D_listener():
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
+        self.multi_frames_angle = np.zeros([self.multi_frames_num])
         print(self.multi_frames_num)
         print(self.multi_frames.shape)
         print(self.multi_frames_check)
@@ -144,9 +145,10 @@ class DOA_2D_listener():
                 # self.start_detect_callback = False
                 for i in range(self.multi_frames_num):
                     print('frame['+str(i)+'] started')
-                    self.detect_callback(self.multi_frames[i])
+                    print(self.detect_callback(self.multi_frames[i], i))
                     self.multi_frames_check[i]=0
                     #스레드로 추후 대체
+                    print(self.multi_frames_angle)
                 
                 if np.sum(self.multi_frames_check) == 0:
                     self.detected = False
@@ -189,7 +191,7 @@ class DOA_2D_listener():
     #         # i++
     #         i = (i+1)%frame_len
     
-    def detect_callback(self, input_test_frames):
+    def detect_callback(self, input_test_frames, i):
         # ignore_class=[2,3,9]
         ignore_class=[]
         #실수화(librosa는 실수값으로 작동)
@@ -212,14 +214,14 @@ class DOA_2D_listener():
                 if self.bt_class is not None:
                     print('value: '+str(estimated[estimated_class]))
                     print('class: '+str(estimated_class))
-                    self.bt_buffer+='class:'+str(estimated_class)+'\n'
-                    self.bt_class.send(self.bt_buffer)
+                    # self.bt_buffer+='class:'+str(estimated_class)+'\n'
+                    # self.bt_class.send(self.bt_buffer)
             else:
                 print('maybe nothing ('+str(estimated[estimated_class])+')')
                 print('class: '+str(estimated_class))
-                self.bt_buffer=''
+                # self.bt_buffer=''
         # print(self.angle)
-        return
+        return estimated_class, estimated[estimated_class]
     
     def non_blocking_callback(self, in_data, frame_count, time_info, status):
         # 녹음 후 청크 저장
@@ -406,7 +408,7 @@ class DOA_pra_listener(DOA_2D_listener):
     #     else:
     #         return data
     
-    def detect_callback(self, input_test_frames):
+    def detect_callback(self, input_test_frames, i):
         # print(input_test_frames)
         test_frames_np = np.array(input_test_frames)
         # print(test_frames_np.shape)
@@ -477,9 +479,10 @@ class DOA_pra_listener(DOA_2D_listener):
         
         # 원본콜백 호출, 모델로 추정
         # print(input_test_frames)
-        if self.bt_class is not None:
-            self.bt_buffer+='angle:'+str(360-int(h_angle[0]/np.pi*180.0))+'\n'
-        return super().detect_callback(input_test_frames)
+        # if self.bt_class is not None:
+        #     self.bt_buffer+='angle:'+str(360-int(h_angle[0]/np.pi*180.0))+'\n'
+        self.multi_frames_angle = 360-int(h_angle[0]/np.pi*180.0)
+        return super().detect_callback(input_test_frames, i)
 
 # class DOA_TDOA_listener(DOA_2D_listener):
 #     def __init__(self, channels=6,
