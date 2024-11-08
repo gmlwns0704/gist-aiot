@@ -57,19 +57,25 @@ class DOA_2D_listener():
         self.SOUND_PRE_OFFSET=sound_pre_offset
         self.estimate_rate=estimate_rate
         
+        print('setting detect values')
         self.detected = False
         self.start_detect_callback = False
+        
+        print('setting chunks values')
         self.chunk_count = 0
         self.max_chunk_count = int((self.RATE/self.CHUNK)*self.RECORD_SECONDS)
         self.chunks = np.zeros([self.max_chunk_count, self.CHUNK, 5], dtype=np.int16)
         self.test_frames = np.zeros([self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
         
+        print('setting multi frames')
         self.multi_frames_num = multi_frames_num
         self.multi_frames = np.zeros([self.multi_frames_num, self.max_chunk_count*2, self.CHUNK, 5], dtype=np.int16)
-        self.multi_frames_check = np.zeros([self.multi_frames_num])
+        self.multi_frames_check = np.zeros([self.multi_frames_num], dtype=np.int8)
         
+        print('setting mean volume')
         self.mean_volume = 0
         
+        print('setting vt values')
         self.bt_class = bt_class
         self.bt_buffer = ''
         
