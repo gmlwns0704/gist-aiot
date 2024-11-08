@@ -424,11 +424,11 @@ class DOA_pra_listener(DOA_2D_listener):
                 for ch in [1,2,3,4]
             ]
         )
-        print(X.shape)
+        # print(X.shape)
         # 평면좌표 구하기
         self.doa.locate_sources(X)
         h_angle = self.doa.azimuth_recon
-        print(f"Estimated DOA angles: {h_angle / np.pi * 180.0} degrees")
+        # print(f"Estimated DOA angles: {h_angle / np.pi * 180.0} degrees")
         
         if self.dim == 3:
             print('dim 3 is not supported for now!')
