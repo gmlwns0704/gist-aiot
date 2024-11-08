@@ -274,7 +274,7 @@ class DOA_2D_listener():
                 for i in range(self.multi_frames_num):
                     mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
                     # i번째 멀티프레임을 위한 프레임 준비됨
-                    if self.chunk_count > self.max_chunk_count+mf_offset:
+                    if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
                         # print('multi frames ['+str(i)+'] ready')
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
