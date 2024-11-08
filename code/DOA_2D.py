@@ -180,8 +180,8 @@ class DOA_2D_listener():
                                 self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
                                 self.bt_buffer += 'class:'+str(self.multi_frames_reult_class[i])+'\n'
                                 self.bt_class.send(self.bt_buffer)
-                            else:
                                 self.bt_buffer=''
+        
                 if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
                     print(self.multi_frames_angle)
@@ -232,7 +232,7 @@ class DOA_2D_listener():
     def detect_callback(self, input_test_frames, i):
         # print('detect callback called')
         # ignore_class=[2,3,9]
-        ignore_class=[]
+        ignore_class=[2,3,9]
         #실수화(librosa는 실수값으로 작동)
         #0번채널만 추출
         # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
