@@ -196,6 +196,7 @@ class DOA_2D_listener():
     #         i = (i+1)%frame_len
     
     def detect_callback(self, input_test_frames, i):
+        print('detect callback called')
         # ignore_class=[2,3,9]
         ignore_class=[]
         #실수화(librosa는 실수값으로 작동)
