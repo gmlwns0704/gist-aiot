@@ -137,8 +137,8 @@ class DOA_2D_listener():
     def threading_detect_callback(self, i):
         while True:
             if self.multi_frames_check[i] == 1:
-                        self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
-                        self.multi_frames_check[i]=2
+                self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
+                self.multi_frames_check[i]=2
     
     def start_detect(self):
         print("detection started")
@@ -276,7 +276,7 @@ class DOA_2D_listener():
                     mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
                     # i번째 멀티프레임을 위한 프레임 준비됨
                     if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
-                        # print('multi frames ['+str(i)+'] ready')
+                        print('multi frames ['+str(i)+'] ready')
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
                         self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
