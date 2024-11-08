@@ -39,9 +39,9 @@ class ResidualBlock(nn.Module):
         return F.relu(x)
 
 
-class Resnet(nn.Module):
+class Resnet_block3(nn.Module):
     def __init__(self):
-        super(Resnet, self).__init__()
+        super(Resnet_block3, self).__init__()
         
         self.conv1 = nn.Conv2d(1, 64, kernel_size=7, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -49,9 +49,9 @@ class Resnet(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         
         self.res_block1 = ResidualBlock(64, 128)
-        self.res_block2 = ResidualBlock(128, 256)
-        self.res_block3 = ResidualBlock(256, 128)
-        self.res_block4 = ResidualBlock(128, 64)
+        self.res_block2 = ResidualBlock(128, 128)
+        self.res_block3 = ResidualBlock(128,64)
+
         
         self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))  # 어떤 입력 크기든 평균 풀링으로 1x1로 변환
         
@@ -69,10 +69,10 @@ class Resnet(nn.Module):
         x = self.pool(x)
         
         x = self.res_block2(x)
-        x = self.res_block3(x)
         x = self.pool(x)
         
-        x = self.res_block4(x)
+        x = self.res_block3(x)
+        x = self.pool(x)
         
         x = self.global_avg_pool(x)
         x = x.view(x.size(0), -1)  # Flatten
@@ -87,7 +87,7 @@ class Resnet(nn.Module):
 class Rasp_Model():
     def __init__(self):    
         # Model instantiation
-        self.model = Resnet()
+        self.model = Resnet_block3()
         self.model.load_state_dict(torch.load('/home/rasp/venv/gist-aiot/pre_and_model/model_parameter.pth', map_location=torch.device('cpu')))
         # # Loss and Optimizer
         # self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.001)
