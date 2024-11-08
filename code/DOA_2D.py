@@ -244,6 +244,7 @@ class DOA_2D_listener():
                     print('complexly copy presound')
                     self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
                     self.test_frames[x-i:x]=self.chunks[:i]
+                print('copy presound done')
                 self.detected = True
                 # x부터 다음 청크 쓰기 시작
                 self.chunk_count=x
