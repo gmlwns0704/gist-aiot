@@ -157,10 +157,10 @@ class DOA_2D_listener():
         # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
         while True:
             # x_rot, y_rot = gyro.get_angle()
-            if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
-                print('!!!machine tilted too much!!!')
-                if self.bt_class is not None:
-                    self.bt_class.send('warn:tilt\n')
+            # if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
+            #     print('!!!machine tilted too much!!!')
+            #     if self.bt_class is not None:
+            #         self.bt_class.send('warn:tilt\n')
             if self.detected:
                 for i in range(self.multi_frames_num):
                     # print(self.multi_frames_check[i])
