@@ -174,7 +174,7 @@ class DOA_2D_listener():
         feat = mfcc.pre_progressing(input_test_frames_ch0, self.RATE)
         result = self.MODEL.test_by_feat(feat)
         
-        estimated = 10**(result.detach().numpy()[0,:])
+        estimated = 10**(-result.detach().numpy()[0,:])
         print(estimated)
         estimated_class = int(np.argmax(estimated))
         # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
