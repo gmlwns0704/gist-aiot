@@ -222,6 +222,7 @@ class DOA_2D_listener():
         # 한바퀴 돌았음
         for j in range(self.multi_frames_num):
             if self.multi_frames_check[j] == 4 and self.multi_frames_range[j] == self.chunk_count:
+                print('thread '+str(j)+' record done')
                 self.multi_frames[j,:self.chunk_count,:,0:5] = self.chunks[self.max_chunk_count-self.chunk_count:,:,0:5]
                 self.multi_frames[j,self.chunk_count:,:,0:5] = self.chunks[:self.max_chunk_count-self.chunk_count,:,0:5]
                 self.multi_frames_check[j] = 1
