@@ -145,7 +145,7 @@ class DOA_2D_listener():
         print('multithread ready')
         self.events = []
         self.threads = []
-        for _ in range(self.multi_frames_num): 
+        for i in range(self.multi_frames_num): 
             self.events.append(threading.Event())
             self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
         
