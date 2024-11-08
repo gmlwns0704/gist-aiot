@@ -1,15 +1,10 @@
 import pyaudio
 import audioop
 import numpy as np
-import wave
 import time
 import sys
-import torch
 import threading
-#서로 sr이 다르면 통일해줘야함
-from scipy.signal import resample
-
-import waveform_analysis
+import time
 
 import pyroomacoustics as pra
 # import noisereduce as nr
@@ -18,10 +13,6 @@ from bt import bt_transmit
 
 sys.path.append('/home/rasp/venv/')
 sys.path.append('/home/rasp/venv/gist-aiot/')
-
-from usb_4_mic_array.tuning import Tuning
-import usb.core
-import usb.util
 
 import pre_and_model.mfcc as mfcc
 import pre_and_model.model as model
@@ -153,25 +144,22 @@ class DOA_2D_listener():
     def start_detect(self):
         print("detection started")
         print('multithread ready')
+        # 타겟클래스
+        target_class = [1,8]
+        # 멀티스레드
         self.events = []
         self.threads = []
-        target_class = [1,8]
         for i in range(self.multi_frames_num): 
             self.events.append(threading.Event())
             self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
             self.threads[i].start()
         
-        # executor = concurrent.futures.ThreadPoolExecutor()
-        # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
         while True:
-            # x_rot, y_rot = gyro.get_angle()
-            # if np.abs(x_rot) > 45 or np.abs(y_rot) > 45:
-            #     print('!!!machine tilted too much!!!')
-            #     if self.bt_class is not None:
-            #         self.bt_class.send('warn:tilt\n')
             for i in range(self.multi_frames_num):
                 # print(self.multi_frames_check[i])
+                # 버퍼가 준비됐으므로 스레드 실행
                 if self.multi_frames_check[i] == 1:
+                    # 스레드 작동중
                     self.multi_frames_check[i] = 2
                     # print('start thread ['+str(i)+']')
                     self.events[i].set()
@@ -196,11 +184,7 @@ class DOA_2D_listener():
     
     def detect_callback(self, input_test_frames, i):
         # print('detect callback called')
-        #실수화(librosa는 실수값으로 작동)
-        #0번채널만 추출
-        # test_frames_np_float = soundDataToFloat(np.array(input_test_frames)[:,:,0]).flatten()
-        #모델에 넣기위한 작업과정
-        # feat = mfcc.pre_progressing(test_frames_np_float, self.RATE)
+        start_time = time.time()
         input_test_frames_ch0 = input_test_frames[:,:,0].copy()
         feat = mfcc.pre_progressing(input_test_frames_ch0, self.RATE)
         result = self.MODEL.test_by_feat(feat)
@@ -209,7 +193,8 @@ class DOA_2D_listener():
         # print(estimated)
         # print(np.sum(estimated))
         estimated_class = int(np.argmax(estimated))
-        # estimated_prob = (estimated[estimated_class]+abs(np.min(estimated)))/np.sum(estimated+abs(np.min(estimated)))
+        end_time = time.time()
+        print('time: '+str(start_time-end_time))
     
         # print(self.angle)
         return estimated_class, estimated[estimated_class]
@@ -257,9 +242,7 @@ class DOA_2D_listener():
         else:
             self.record_delay -= 1
         # 루프
-        self.chunk_count += 1
-        if self.chunk_count >= self.max_chunk_count:
-            self.chunk_count = 0
+        self.chunk_count = (self.chunk_count+1)%self.max_chunk_count
         
         return in_data, pyaudio.paContinue
     
@@ -329,16 +312,6 @@ class DOA_pra_listener(DOA_2D_listener):
                         input=True,
                         frames_per_buffer=self.dim3_chunk,
                         stream_callback=self.non_blocking_3d_callback)
-            
-            self.mic_3d_positions = np.array([
-                [0.035,0],
-                [-0.035,0],
-                [0,0.035]
-            ]).T
-        #https://github.com/LCAV/pyroomacoustics/issues/166 버그를 고치기 위해 직접 설정?
-        # num_points = 360  # azimuth에 대한 점의 개수
-        # azimuth = np.linspace(0, 2*np.pi, num_points)  # -180도에서 180도까지
-        # colatitude = np.linspace(0, np.pi, num_points)  # 0에서 180도까지 (구면 좌표계)
         
         self.doa=pra.doa.music.MUSIC(self.mic_positions,
                                      self.RATE,
@@ -374,59 +347,6 @@ class DOA_pra_listener(DOA_2D_listener):
             print('dim 3 is not supported for now!')
             exit()
         
-        # if self.dim == 3:
-        #     # TDOA 방식
-        #     # 데시벨을 인식한 청크
-        #     t = int(len(input_test_frames)*self.SOUND_PRE_OFFSET)
-        #     target_frames_np = np.array(input_test_frames[t-1:t+2])
-            
-        #     # respeaker 중 마주보는 2개 + 보조마이크
-        #     volume_timing_x=np.zeros(3, dtype=np.int16)
-        #     volume_timing_y=np.zeros(3, dtype=np.int16)
-        #     for i, ch in enumerate([1,3,5]):
-        #         volume_timing_x[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.volume_gap_rate)
-        #     for i, ch in enumerate([2,4,5]):
-        #         volume_timing_y[i] = np.argmax(target_frames_np[:,:,ch].flatten()>self.volume_gap_rate)
-        #     print(volume_timing_x)
-        #     print(volume_timing_y)
-            
-            # pra기반 MUSIC방식
-            # # 수직각도 DOA, 수직으로 교차하는 두개의 평면 사용
-            # X_3D_y = np.array(
-            #     [
-            #         pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-            #         for ch in [0,2,4]
-            #     ]
-            # )
-            # X_3D_x = np.array(
-            #     [
-            #         pra.transform.stft.analysis(test_frames_np[:,:,ch].flatten(), self.nfft, self.nfft // 2).T
-            #         for ch in [1,3,4]
-            #     ]
-            # )
-            # print(self.doa_3d.M)
-            # print(X_3D_x.shape)
-            # print(X_3D_y.shape)
-            # self.doa_3d.locate_sources(X_3D_x)
-            # v_angle_x = self.doa_3d.azimuth_recon
-            # self.doa_3d.locate_sources(X_3D_y)
-            # v_angle_y = self.doa_3d.azimuth_recon
-            
-            # print(f"Estimated DOA v_x angles: {v_angle_x / np.pi * 180.0} degrees")
-            # print(f"Estimated DOA v_y angles: {v_angle_y / np.pi * 180.0} degrees")
-            
-            # # 평면각 반영해서 두 평면의 각 일정비율로 반영, 공식에 대해선 고민해볼것
-            # v_angle = ((np.cos(h_angle)**2)*v_angle_x + (np.sin(h_angle)**2)*v_angle_y)
-            # print(f"Estimated DOA v angles: {v_angle / np.pi * 180.0} degrees")
-            
-            # # 자이로값 보정, 값의 덧뺄셈, 위치 등은 추후 수정
-            # offset_x, offset_y = gyro.get_angle()
-            # # v_angle += ((np.cos(h_angle)**2)*offset_x + (np.sin(h_angle)**2)*offset_y)
-        
-        # 원본콜백 호출, 모델로 추정
-        # print(input_test_frames)
-        # if self.bt_class is not None:
-        #     self.bt_buffer+='angle:'+str(360-int(h_angle[0]/np.pi*180.0))+'\n'
         self.multi_frames_angle[i] = 360-int(h_angle[0]/np.pi*180.0)
         return super().detect_callback(input_test_frames, i)
 
