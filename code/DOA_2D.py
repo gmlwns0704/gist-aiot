@@ -150,6 +150,7 @@ class DOA_2D_listener():
         for i in range(self.multi_frames_num): 
             self.events.append(threading.Event())
             self.threads.append(threading.Thread(target=self.threading_detect_callback, args=(i,)))
+            self.threads[i].start()
         
         # executor = concurrent.futures.ThreadPoolExecutor()
         # futures = [executor.submit(self.threading_detect_callback, i) for i in range(self.multi_frames_num)]
@@ -164,7 +165,7 @@ class DOA_2D_listener():
                     # print(self.multi_frames_check[i])
                     if self.multi_frames_check[i] == 1:
                         self.multi_frames_check[i] = 2
-                        print('start thread ['+str(i)+']')
+                        # print('start thread ['+str(i)+']')
                         self.events[i].set()
                 if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
                     self.detected = False
@@ -291,7 +292,7 @@ class DOA_2D_listener():
                     mf_offset = int(self.max_chunk_count*(i/self.multi_frames_num))
                     # i번째 멀티프레임을 위한 프레임 준비됨
                     if self.multi_frames_check[i] == 0 and self.chunk_count > self.max_chunk_count+mf_offset:
-                        print('multi frames ['+str(i)+'] ready')
+                        # print('multi frames ['+str(i)+'] ready')
                         self.multi_frames_check[i] = 1
                         #해당 max_chunk_count만큼 가져옴
                         self.multi_frames[i,:,:,:] = self.test_frames[mf_offset:self.max_chunk_count+mf_offset,:,:]
