@@ -258,7 +258,7 @@ class DOA_2D_listener():
         raw_np_data = np.frombuffer(in_data, dtype=np.int16).reshape(-1, self.RESP_CHANNELS)
         # 이동평균필터 노이즈제거
         np_data = raw_np_data.copy()
-        for i in range(5):
+        for i in [1,2,3,4]:
             np_data[:,i] = np.convolve(raw_np_data[:,i], self.window, mode='same')
         #테스트 프레임으로도 읽음
         if self.detected:
