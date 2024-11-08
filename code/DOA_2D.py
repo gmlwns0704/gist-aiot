@@ -174,12 +174,10 @@ class DOA_2D_listener():
                         # print(self.multi_frames_reult_class[i])
                         # print(self.multi_frames_reult_value[i])
                         if self.bt_class is not None:
-                            print(self.multi_frames_angle[i])
-                            print(self.multi_frames_reult_class[i])
-                            print(self.multi_frames_reult_value[i])
                             if self.multi_frames_reult_value[i] > self.estimate_rate and self.multi_frames_reult_class[i] not in ignore_class:
                                 self.bt_buffer += 'angle:'+str(self.multi_frames_angle[i])+'\n'
                                 self.bt_buffer += 'class:'+str(self.multi_frames_reult_class[i])+'\n'
+                                print(self.bt_buffer)
                                 self.bt_class.send(self.bt_buffer)
                                 self.bt_buffer=''
         
