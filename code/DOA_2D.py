@@ -238,8 +238,10 @@ class DOA_2D_listener():
                 x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
                 i=self.chunk_count
                 if i>x:
+                    print('simpy copy presound')
                     self.test_frames[:x]=self.chunks[i-x:i]
                 else:
+                    print('complexly copy presound')
                     self.test_frames[:x-i]=self.chunks[self.max_chunk_count-(x-i):]
                     self.test_frames[x-i:x]=self.chunks[:i]
                 self.detected = True
