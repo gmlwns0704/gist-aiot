@@ -144,7 +144,7 @@ class DOA_2D_listener():
             self.events[i].wait()
             self.multi_frames_reult_class[i], self.multi_frames_reult_value[i] = self.detect_callback(self.multi_frames[i], i)
             # print('thread callback done '+str(i))
-            self.multi_frames_check[i]=3      
+            self.multi_frames_check[i]=3
             self.events[i].clear()         
     
     def start_detect(self):
@@ -183,14 +183,7 @@ class DOA_2D_listener():
                             print(self.bt_buffer)
                             self.bt_class.send(self.bt_buffer)
                             self.bt_buffer=''
-            if np.sum(self.multi_frames_check) == 3*self.multi_frames_num:
-                self.detected = False
-                # print(self.multi_frames_angle)
-                # print(np.mean(self.multi_frames_angle))
-                # print(self.multi_frames_reult_class)
-                # print(self.multi_frames_reult_value)
-                self.multi_frames_check.fill(0)
-                
+                    self.multi_frames_check[i] = 0
             
             time.sleep(0.1)
         return
