@@ -184,7 +184,7 @@ class DOA_2D_listener():
                 self.bt_buffer+='class:'+str(estimated_class)+'\n'
                 self.bt_class.send(self.bt_buffer)
         else:
-            print('maybe nothing')
+            print('maybe nothing ('+str(estimated[estimated_class])+')')
             print(estimated_class)
             self.bt_buffer=''
         # print(self.angle)
