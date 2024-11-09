@@ -222,7 +222,7 @@ class DOA_2D_listener():
         # detected
         if self.record_delay <= 0:
             if volume>self.mean_volume*self.volume_gap_rate:
-                # print('sound detected!')
+                print('sound detected!')
                 x=int(self.max_chunk_count*self.SOUND_PRE_OFFSET)
                 # 이용가능 스레드 탐색
                 for j in range(self.multi_frames_num):
